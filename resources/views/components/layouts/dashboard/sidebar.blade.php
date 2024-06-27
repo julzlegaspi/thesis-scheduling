@@ -145,7 +145,7 @@
                         </li>
                         
                         <li>
-                            <a href="#"
+                            <a href="{{ route('archives.index') }}"
                                 class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
                                 <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -155,7 +155,6 @@
                                         clip-rule="evenodd" />
                                     <path d="M2 6a2 2 0 0 1 2-2h16a2 2 0 1 1 0 4H4a2 2 0 0 1-2-2Z" />
                                 </svg>
-
 
                                 <span class="ml-3" sidebar-toggle-item>Archived</span>
                             </a>

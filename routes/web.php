@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\FacebookLoginController;
+use App\Livewire\Archive;
 use App\Livewire\Venue;
 
 Route::get('/', function () {
@@ -39,7 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/sections', Section::class)->name('sections.index');
     Route::get('/users', User::class)->name('users.index');
     Route::get('/venues', Venue::class)->name('venues.index');
-    
+    Route::get('/archives', Archive::class)->name('archives.index');
     //Panelist
 
 

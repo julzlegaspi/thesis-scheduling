@@ -62,7 +62,7 @@
                     </svg>
                 </button> --}}
 
-                <div class="z-20 z-50 hidden max-w-sm my-4 overflow-hidden text-base list-none bg-white divide-y divide-gray-100 rounded shadow-lg dark:divide-gray-600 dark:bg-gray-700"
+                {{-- <div class="z-20 z-50 hidden max-w-sm my-4 overflow-hidden text-base list-none bg-white divide-y divide-gray-100 rounded shadow-lg dark:divide-gray-600 dark:bg-gray-700"
                     id="notification-dropdown">
                     <div
                         class="block px-4 py-2 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -210,7 +210,7 @@
                             View all
                         </div>
                     </a>
-                </div>
+                </div> --}}
 
                 {{-- <button type="button" data-dropdown-toggle="apps-dropdown"
                     class="hidden p-2 text-gray-500 rounded-lg sm:flex hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700">
@@ -352,7 +352,7 @@
                             id="user-menu-button-2" aria-expanded="false" data-dropdown-toggle="dropdown-2">
                             <span class="sr-only">Open user menu</span>
                             <img class="w-8 h-8 rounded-full"
-                                src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
+                                src="https://ui-avatars.com/api/?name={{ auth()->user()->name }}" alt="user photo">
                         </button>
                     </div>
 
