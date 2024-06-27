@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\FacebookLoginController;
+use App\Livewire\Course;
 use App\Livewire\Dashboard;
 use App\Livewire\TeamAndTitle;
 
@@ -22,15 +23,25 @@ Route::middleware(['guest'])->group(function () {
 
 // Authenticated route
 Route::middleware(['auth', 'verified'])->group(function() {
+    //Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    //Dashboard
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
-    Route::prefix('/students')->group(function () {
-        Route::get('/teams-and-titles', TeamAndTitle::class)->name('teams.and.titles.index');
-    });
+    //Admin
+    Route::get('/courses', Course::class)->name('courses.index');
+
+    //Panelist
+
+
+    //Secretary
+
+
+    //Students
+    Route::get('/teams-and-titles', TeamAndTitle::class)->name('teams.and.titles.index');
     
 });
 
