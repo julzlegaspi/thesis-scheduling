@@ -23,7 +23,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'email_verified_at',
         'password',
-        'avatar'
+        'avatar',
+        'course_id',
+        'section_id'
     ];
 
     /**
@@ -52,6 +54,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
     }
 
 }

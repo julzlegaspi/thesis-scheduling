@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\User;
 use App\Livewire\Course;
 use App\Livewire\Section;
 use App\Livewire\Dashboard;
@@ -35,7 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function() {
     //Admin
     Route::get('/courses', Course::class)->name('courses.index');
     Route::get('/sections', Section::class)->name('sections.index');
-
+    Route::get('/users', User::class)->name('users.index');
+    
     //Panelist
 
 

@@ -127,14 +127,14 @@
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
                             <input type="text" wire:model="name" id="name"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="Type course name">
+                                placeholder="Type section name">
 
                             <x-input-error :messages="$errors->get('name')" class="mt-2" />
                         </div>
                     </div>
                     <x-save-update-button methodName="update">Update</x-save-update-button>
                     <x-delete-button wire:click="destroy('{{ $section->id }}')"
-                        wire:confirm="You are about to delete course {{ $name }}. Continue?">Delete
+                        wire:confirm="You are about to delete section {{ $name }}. Continue?">Delete
                         section</x-delete-button>
                 </form>
             </div>

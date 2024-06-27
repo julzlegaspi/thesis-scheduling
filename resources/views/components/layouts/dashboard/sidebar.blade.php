@@ -94,7 +94,7 @@
                         <li>
                             <button type="button"
                                 class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                                aria-controls="dropdown-crud" data-collapse-toggle="dropdown-crud" aria-expanded="{{ ( in_array(request()->segment(1), ['courses', 'sections']) ) ? 'true' : 'false' }}">
+                                aria-controls="dropdown-crud" data-collapse-toggle="dropdown-crud" aria-expanded="{{ ( in_array(request()->segment(1), ['courses', 'sections', 'users']) ) ? 'true' : 'false' }}">
                                 <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     fill="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@
                                         clip-rule="evenodd"></path>
                                 </svg>
                             </button>
-                            <ul id="dropdown-crud" class="space-y-2 py-2 {{ (!in_array(request()->segment(1), ['courses', 'sections'])) ? 'hidden' : '' }}">
+                            <ul id="dropdown-crud" class="space-y-2 py-2 {{ (!in_array(request()->segment(1), ['courses', 'sections', 'users'])) ? 'hidden' : '' }}">
                                 <li>
                                     <a href="{{ route('courses.index') }}"
                                         class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Courses</a>
@@ -122,7 +122,7 @@
                                         class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Sections</a>
                                 </li>
                                 <li>
-                                    <a href="#"
+                                    <a href="{{ route('users.index') }}"
                                         class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Users</a>
                                 </li>
                             </ul>

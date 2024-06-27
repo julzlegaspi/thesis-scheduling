@@ -19,6 +19,11 @@ class Course extends Component
     #[Rule('required|string')]
     public $name = '';
 
+    public function mount()
+    {
+        $this->authorize('admin.read');
+    }
+
     public function store()
     {
         $this->validate();
@@ -65,6 +70,7 @@ class Course extends Component
     {
         $this->code = '';
         $this->name = '';
+        $this->resetValidation();
     }
 
     public function render()

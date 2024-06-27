@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Course;
-use App\Models\Section;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -14,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignIdFor(Course::class)->constrained();
-            $table->foreignIdFor(Section::class)->constrained();
+            $table->integer('course_id')->nullable();
+            $table->integer('section_id')->nullable();
         });
     }
 

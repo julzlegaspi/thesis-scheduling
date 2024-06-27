@@ -17,6 +17,11 @@ class Section extends Component
     #[Rule('required|string')]
     public $name = '';
 
+    public function mount()
+    {
+        $this->authorize('admin.read');
+    }
+
     public function store()
     {
         $this->validate();
@@ -59,6 +64,7 @@ class Section extends Component
     public function clear()
     {
         $this->name = '';
+        $this->resetValidation();
     }
 
     public function render()
