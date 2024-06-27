@@ -15,7 +15,7 @@
             <div class="flex flex-col items-center justify-center px-6 pt-8 mx-auto mx:h-screen pt:mt-0 dark:bg-gray-900">
                 <div>
                     <a href="/">
-                        <x-application-logo class="w-32 h-32 fill-current text-gray-500" />
+                        <x-application-logo class="mb-4 w-28 h-25 fill-current text-gray-500" />
                     </a>
                 </div>
     

@@ -2,14 +2,13 @@
     <!-- Card header -->
     <div class="items-center justify-between lg:flex">
         <div class="mb-4 lg:mb-0">
-            <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Stores</h1>
-            <span class="text-base font-normal text-gray-500 dark:text-gray-400">Manage and add multiple store locations
-                easily.</span>
+            <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Teams and Titles</h1>
+            <span class="text-base font-normal text-gray-500 dark:text-gray-400">Manage teams and thesis title</span>
         </div>
         <div class="items-center sm:flex">
             <div class="flex items-center">
                 <x-primary-button data-modal-target="add-modal" data-modal-toggle="add-modal">
-                    Add new store
+                    Add new
                 </x-primary-button>
             </div>
         </div>
@@ -24,33 +23,60 @@
                             <tr>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                    #
+                                    Team Name
                                 </th>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                    Name
+                                    Thesis Title
                                 </th>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                    Address
+                                    Members
+                                </th>
+                                <th scope="col"
+                                    class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                    Panelist
+                                </th>
+                                <th scope="col"
+                                    class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                    Status
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800">
-                            @forelse ($stores as $store)
+                            @forelse ($teams as $team)
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                    <td
-                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                        {{ $loop->index + 1 }}
-                                    </td>
                                     <td class="p-4 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <x-data-link-button wire:click="edit('{{ $store->id }}')"
-                                            data-modal-target="edit-modal"
-                                            data-modal-toggle="edit-modal">{{ $store->name }}</x-data-link-button>
+                                        <x-data-link-button data-modal-target="edit-modal"
+                                            data-modal-toggle="edit-modal">{{ $team->name }}</x-data-link-button>
                                     </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                        {{ $store->address }}
+                                        {{ $team->thesis_title }}
+                                    </td>
+                                    <td
+                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                        Me, John, Jane
+                                    </td>
+                                    <td
+                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                        <div class="flex -space-x-4 rtl:space-x-reverse">
+                                            @foreach ($team->users as $panelist)
+                                                @if (!empty($panelist->avatar))
+                                                    <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                                                        src="{{ asset('avatar/' . $panelist->avatar) }}" alt="avatar">
+                                                @else
+                                                    <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                                                        src="https://ui-avatars.com/api/?name={{ $panelist->name }}&rounded=true&background=random"
+                                                        alt="{{ $panelist->name }}" title="{{ $panelist->name }}">
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </td>
+                                    <td
+                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                        <x-status statusCode="{{ $team->status }}">{{ $team::STATUS[$team->status] }}</x-status>
+                                        
                                     </td>
                                 </tr>
                             @empty
@@ -80,7 +106,7 @@
                 <!-- Modal header -->
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Create New Store
+                        Create New
                     </h3>
                     <button type="button" wire:click="clear"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -121,7 +147,7 @@
     </div>
 
     <!-- Edit modal -->
-    <div id="edit-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
+    {{-- <div id="edit-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <!-- Modal content -->
@@ -168,5 +194,5 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>

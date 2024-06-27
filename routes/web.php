@@ -5,7 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\FacebookLoginController;
 use App\Livewire\Dashboard;
-use App\Livewire\Store;
+use App\Livewire\TeamAndTitle;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,7 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function() {
 
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
-    Route::get('/stores', Store::class)->name('stores.index');
+    Route::prefix('/students')->group(function () {
+        Route::get('/teams-and-titles', TeamAndTitle::class)->name('teams.and.titles.index');
+    });
+    
 });
 
 require __DIR__.'/auth.php';
