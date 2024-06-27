@@ -1,12 +1,13 @@
 <?php
 
+use App\Livewire\Course;
+use App\Livewire\Section;
+use App\Livewire\Dashboard;
+use App\Livewire\TeamAndTitle;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\FacebookLoginController;
-use App\Livewire\Course;
-use App\Livewire\Dashboard;
-use App\Livewire\TeamAndTitle;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
 
     //Admin
     Route::get('/courses', Course::class)->name('courses.index');
+    Route::get('/sections', Section::class)->name('sections.index');
 
     //Panelist
 

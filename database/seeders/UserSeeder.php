@@ -57,6 +57,8 @@ class UserSeeder extends Seeder
                 'email' => $user['email'],
                 'email_verified_at' => $user['email_verified_at'],
                 'password' => bcrypt('password'),
+                'course_id' => 1,
+                'section_id' => 1
             ]);
     
             $u->assignRole($user['role']);
