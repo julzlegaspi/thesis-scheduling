@@ -13,6 +13,8 @@ class Section extends Component
     use WithPagination;
 
     public SectionModel $section;
+
+    public $id;
     
     #[Rule('required|string')]
     public $name = '';
@@ -36,6 +38,7 @@ class Section extends Component
 
     public function edit(SectionModel $section)
     {
+        $this->id = $section->id;
         $this->section = $section;
         $this->name = $section->name;
     }

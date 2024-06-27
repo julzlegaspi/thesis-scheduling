@@ -13,6 +13,8 @@ class Course extends Component
 
     public CourseModel $course;
 
+    public $id;
+
     #[Rule('required|string')]
     public $code = '';
 
@@ -39,6 +41,7 @@ class Course extends Component
 
     public function edit(CourseModel $course)
     {
+        $this->id = $course->id;
         $this->course = $course;
         $this->code = $course->code;
         $this->name = $course->name;
