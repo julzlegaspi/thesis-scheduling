@@ -17,7 +17,7 @@
                             <span class="ml-3" sidebar-toggle-item>Dashboard</span>
                         </a>
                     </li>
-                    @can('student.read')
+                    @canany(['admin.read', 'student.read'])
                         <li>
                             <a href="{{ route('teams.and.titles.index') }}"
                                 class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
@@ -32,8 +32,8 @@
                                 <span class="ml-3" sidebar-toggle-item>Teams and Titles</span>
                             </a>
                         </li>
-                    @endcan
-                    <li>
+                    @endcanany
+                    {{-- <li>
                         <a href="#"
                             class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
                             <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
@@ -88,7 +88,7 @@
 
                             <span class="ml-3" sidebar-toggle-item>Queuing</span>
                         </a>
-                    </li>
+                    </li> --}}
                     @can('admin.read')
                         
                         <li>

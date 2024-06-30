@@ -48,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
 
 
     //Students
-    Route::get('/teams-and-titles', TeamAndTitle::class)->name('teams.and.titles.index');
+    Route::get('/teams-and-titles', TeamAndTitle::class)->middleware(['role:admin|student'])->name('teams.and.titles.index');
     
 });
 

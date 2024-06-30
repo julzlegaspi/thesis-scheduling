@@ -51,11 +51,6 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function teams(): BelongsToMany
-    {
-        return $this->belongsToMany(Team::class);
-    }
-
     public function course()
     {
         return $this->belongsTo(Course::class);
@@ -64,6 +59,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function section()
     {
         return $this->belongsTo(Section::class);
+    }
+
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'member_team', 'user_id', 'team_id');
     }
 
 }

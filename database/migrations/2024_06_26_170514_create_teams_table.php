@@ -17,10 +17,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class);
             $table->string('name');
             $table->string('thesis_title');
-            $table->integer('venue_id');
-            $table->dateTime('start');
-            $table->dateTime('end');
-            $table->integer('status')->default(0);
 
             $table->softDeletes();
             $table->timestamps();

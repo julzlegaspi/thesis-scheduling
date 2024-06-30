@@ -22,6 +22,8 @@ class User extends Component
     public $section = null;
     public $role = '';
 
+    public $search = '';
+
     public function mount()
     {
         $this->authorize('admin.read');
@@ -115,7 +117,11 @@ class User extends Component
 
     public function render()
     {
-        $users = UserModel::orderBy('name', 'asc')->with('course', 'section')->paginate();
+        // $users = UserModel::orderBy('name', 'asc')->with('course', 'section')->paginate();
+        $users = UserModel::where('name', 'like', '%' . $this->search . '%')
+            ->orWhere('email', 'like', '%' . $this->search . '%')
+            ->with('teams')
+            ->paginate();
         $courses = Course::orderBy('name', 'asc')->get();
         $sections = Section::orderBy('name', 'asc')->get();
         $roles = \Spatie\Permission\Models\Role::all();
