@@ -130,11 +130,14 @@ class TeamAndTitle extends Component
         $panelistUsers = User::role('panelist')->get();
 
         if (auth()->user()->roles->pluck('name')[0] === 'admin') {
-            $teams = Team::with('user', 'members', 'panelists', 'venue')->paginate();
+            $teams = Team::with('user', 'members', 'panelists')->paginate();
             $studentUsers = User::role('student')
                 ->where('id', '!=', auth()->user()->id)
                 ->with('course', 'section')
-                ->get();
+                ->get()
+                ->groupBy(function ($item) {
+                    return $item->course->name;
+                });
         }
 
         if (auth()->user()->roles->pluck('name')[0] === 'student') {
@@ -147,11 +150,11 @@ class TeamAndTitle extends Component
 
             // Get all teams created by the current user
             $createdTeams = Team::where('user_id', auth()->user()->id)
-                ->with('user', 'members', 'panelists', 'venue')
+                ->with('user', 'members', 'panelists')
                 ->get();
 
             // Get all teams the current user belongs to
-            $belongingTeams = auth()->user()->teams()->with('user', 'members', 'panelists', 'venue')->get();
+            $belongingTeams = auth()->user()->teams()->with('user', 'members', 'panelists')->get();
 
             // Merge the results
             $allTeams = $createdTeams->merge($belongingTeams);

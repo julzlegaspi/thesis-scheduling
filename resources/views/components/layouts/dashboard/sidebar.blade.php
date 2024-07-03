@@ -17,6 +17,20 @@
                             <span class="ml-3" sidebar-toggle-item>Dashboard</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('schedules.index') }}"
+                            class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
+                            <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd"
+                                    d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
+                                    clip-rule="evenodd" />
+                            </svg>
+
+                            <span class="ml-3" sidebar-toggle-item>Defense Schedules</span>
+                        </a>
+                    </li>
                     @canany(['admin.read', 'student.read'])
                         <li>
                             <a href="{{ route('teams.and.titles.index') }}"
@@ -33,20 +47,8 @@
                             </a>
                         </li>
                     @endcanany
+
                     {{-- <li>
-                        <a href="#"
-                            class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
-                            <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                fill="currentColor" viewBox="0 0 24 24">
-                                <path fill-rule="evenodd"
-                                    d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="ml-3" sidebar-toggle-item>Schedules</span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="#"
                             class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
                             <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
@@ -90,11 +92,11 @@
                         </a>
                     </li> --}}
                     @can('admin.read')
-                        
                         <li>
                             <button type="button"
                                 class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                                aria-controls="dropdown-crud" data-collapse-toggle="dropdown-crud" aria-expanded="{{ ( in_array(request()->segment(1), ['courses', 'sections', 'users']) ) ? 'true' : 'false' }}">
+                                aria-controls="dropdown-crud" data-collapse-toggle="dropdown-crud"
+                                aria-expanded="{{ in_array(request()->segment(1), ['courses', 'sections', 'users']) ? 'true' : 'false' }}">
                                 <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     fill="currentColor" viewBox="0 0 24 24">
@@ -112,7 +114,8 @@
                                         clip-rule="evenodd"></path>
                                 </svg>
                             </button>
-                            <ul id="dropdown-crud" class="space-y-2 py-2 {{ (!in_array(request()->segment(1), ['courses', 'sections', 'users'])) ? 'hidden' : '' }}">
+                            <ul id="dropdown-crud"
+                                class="space-y-2 py-2 {{ !in_array(request()->segment(1), ['courses', 'sections', 'users']) ? 'hidden' : '' }}">
                                 <li>
                                     <a href="{{ route('courses.index') }}"
                                         class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Courses</a>
@@ -143,7 +146,7 @@
                                 <span class="ml-3" sidebar-toggle-item>Venues</span>
                             </a>
                         </li>
-                        
+
                         <li>
                             <a href="{{ route('archives.index') }}"
                                 class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
@@ -159,7 +162,6 @@
                                 <span class="ml-3" sidebar-toggle-item>Archived</span>
                             </a>
                         </li>
-
                     @endcan
                 </ul>
             </div>

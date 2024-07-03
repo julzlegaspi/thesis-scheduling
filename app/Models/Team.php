@@ -12,20 +12,6 @@ class Team extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
-
-    public const PENDING = 0;
-    public const FOR_PANELIST_APPROVAL = 1;
-    public const APPROVED = 2;
-    public const DECLINED = 3;
-
-    public const STATUS = [
-        0 => 'Pending',
-        1 => 'For Panelist Approval',
-        2 => 'Approved',
-        3 => 'Declined'
-    ];
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -39,10 +25,5 @@ class Team extends Model
     public function panelists(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'panelist_team', 'team_id', 'user_id');
-    }
-
-    public function venue()
-    {
-        return $this->belongsTo(Venue::class);
     }
 }

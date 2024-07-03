@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\FacebookLoginController;
 use App\Livewire\Archive;
+use App\Livewire\Schedule;
 use App\Livewire\Venue;
 
 Route::get('/', function () {
@@ -34,6 +35,9 @@ Route::middleware(['auth', 'verified'])->group(function() {
 
     //Dashboard
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
+
+    //Schedules
+    Route::get('/schedules', Schedule::class)->name('schedules.index');
 
     //Admin
     Route::get('/courses', Course::class)->name('courses.index');
