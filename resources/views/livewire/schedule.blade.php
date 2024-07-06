@@ -3,7 +3,8 @@
     <div class="items-center justify-between lg:flex">
         <div class="mb-4 lg:mb-0">
             <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Defense Schedules</h1>
-            <span class="text-base font-normal text-gray-500 dark:text-gray-400">View and manage thesis defense schedules</span>
+            <span class="text-base font-normal text-gray-500 dark:text-gray-400">View and manage thesis defense
+                schedules</span>
         </div>
         @can('admin.create')
             <div class="items-center sm:flex">
@@ -34,6 +35,10 @@
                                 </th>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                    Members
+                                </th>
+                                <th scope="col"
+                                    class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
                                     Panelist
                                 </th>
                                 <th scope="col"
@@ -48,18 +53,36 @@
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
                                     Status
                                 </th>
+                                <th scope="col"
+                                    class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                    Type
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800">
                             @forelse ($schedules as $schedule)
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                     <td class="p-4 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <x-data-link-button data-modal-target="edit-modal" {{-- wire:click="edit('{{ $schedule->id }}')" --}}
-                                            data-modal-toggle="edit-modal">{{ $schedule->team->thesis_title }}</x-data-link-button>
+                                        <a href="{{ route('schedule.show', $schedule) }}" class="font-normal text-blue-600 dark:text-blue-500 hover:underline">{{ $schedule->team->thesis_title }}</a>
                                     </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                                         {{ $schedule->team->name }}
+                                    </td>
+                                    <td
+                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                        <div class="flex -space-x-4 rtl:space-x-reverse">
+                                            @foreach ($schedule->team->members as $members)
+                                                @if (!empty($members->avatar))
+                                                    <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                                                        src="{{ asset('avatar/' . $members->avatar) }}" alt="avatar">
+                                                @else
+                                                    <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                                                        src="https://ui-avatars.com/api/?name={{ $members->name }}&rounded=true&background=random"
+                                                        alt="{{ $members->name }}" title="{{ $members->name }}">
+                                                @endif
+                                            @endforeach
+                                        </div>
                                     </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
@@ -78,7 +101,7 @@
                                     </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                        {{ $schedule->venue->name }}
+                                        {{ $schedule->venue?->name }}
                                     </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
@@ -89,6 +112,10 @@
                                         <x-status
                                             statusCode="{{ $schedule->status }}">{{ $schedule::STATUS[$schedule->status] }}</x-status>
                                     </td>
+                                    <td
+                                    class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                    {{ $schedule::DEFENSE_STATUS[$schedule->type_of_defense] }}
+                                </td>
                                 </tr>
                             @empty
                                 <tr>
@@ -106,4 +133,115 @@
         </div>
     </div>
     {{ $schedules->links() }}
+
+    <!-- Add modal -->
+    <div id="add-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Create New Schedule
+                    </h3>
+                    <button type="button" wire:click="clear"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-toggle="add-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <form class="p-4 md:p-5">
+                    <div class="grid gap-4 mb-4 grid-cols-2">
+
+                        <div class="col-span-2">
+                            <label for="team"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Team</label>
+
+                            <select id="team" wire:model.live="team" wire:change="getTeamInfo"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="">Select option</option>
+                                @foreach ($teams as $team)
+                                    <option value="{{ $team->id }}">{{ $team->name }} {{ ($team->schedule != null) ? "(Scheduled on " . \Carbon\Carbon::parse($team->schedule->start)->format('F j, Y @ h:i A') . ")" : '' }}</option>
+                                @endforeach
+                            </select>
+
+                            <x-input-error :messages="$errors->get('team')" class="mt-2" />
+                        </div>
+
+                        @if ($team !== '')
+                            <div class="col-span-2">
+                                <label for="team"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Thesis
+                                    Title</label>
+                                <input type="text" value="{{ $thesisTitle }}" disabled
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            </div>
+                            <div class="col-span-2">
+                                <label for="members"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Members</label>
+                                <textarea id="members" rows="3" disabled
+                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">{{ $teamMembers }}
+                                    </textarea>
+                            </div>
+                            <div class="col-span-2">
+                                <label for="members"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Panelists</label>
+                                <textarea id="members" rows="3" disabled
+                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">{{ $panelists }}
+                                    </textarea>
+                            </div>
+
+                            <div class="col-span-2">
+                                <label for="venue"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Venue</label>
+    
+                                <select id="venue" wire:model.live="venue"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option value="">Select option</option>
+                                    @foreach ($venues as $venue)
+                                        <option value="{{ $venue->id }}">{{ $venue->name }}</option>
+                                    @endforeach
+                                </select>
+    
+                                <x-input-error :messages="$errors->get('venue')" class="mt-2" />
+                            </div>
+
+                            <div class="col-span-2">
+                                <label for="start"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date/Time</label>
+                                <input type="datetime-local" wire:model="start" id="start"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+    
+                                <x-input-error :messages="$errors->get('start')" class="mt-2" />
+                            </div>
+
+                            <div class="col-span-2">
+                                <label for="type"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+    
+                                <select id="type" wire:model.live="type"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option value="">Select option</option>
+                                    @foreach (\App\Models\Schedule::DEFENSE_STATUS as $key => $type)
+                                        <option value="{{ $key }}">{{ $type }}</option>
+                                    @endforeach
+                                </select>
+    
+                                <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                            </div>
+                        @endif
+
+                    </div>
+                    <x-save-update-button methodName="store">Add new schedule</x-save-update-button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

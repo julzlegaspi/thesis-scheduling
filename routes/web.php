@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\FacebookLoginController;
+use App\Http\Controllers\ViewManuscriptFileController;
 use App\Livewire\Archive;
 use App\Livewire\Schedule;
+use App\Livewire\ScheduleDetail;
 use App\Livewire\Venue;
 
 Route::get('/', function () {
@@ -38,6 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
 
     //Schedules
     Route::get('/schedules', Schedule::class)->name('schedules.index');
+    Route::get('/schedules/details/{schedule}', ScheduleDetail::class)->middleware(['role:admin|secretary|student'])->name('schedule.show');
 
     //Admin
     Route::get('/courses', Course::class)->name('courses.index');
@@ -54,6 +57,8 @@ Route::middleware(['auth', 'verified'])->group(function() {
     //Students
     Route::get('/teams-and-titles', TeamAndTitle::class)->middleware(['role:admin|student'])->name('teams.and.titles.index');
     
+    //View file
+    Route::post('/view-manuscript-file/{manuscript}', ViewManuscriptFileController::class)->middleware(['role:admin|secretary|student'])->name('manuscript.show');
 });
 
 require __DIR__.'/auth.php';

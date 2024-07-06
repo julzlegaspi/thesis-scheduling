@@ -21,6 +21,7 @@ return new class extends Migration
             $table->dateTime('end');
             $table->integer('status');
             $table->dateTime('redefense_on')->nullable();
+            $table->integer('type_of_defense');
             $table->softDeletes();
             $table->timestamps();
         });
