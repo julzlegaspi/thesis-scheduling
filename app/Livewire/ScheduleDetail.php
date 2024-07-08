@@ -24,6 +24,7 @@ class ScheduleDetail extends Component
     public $generalComments = '';
     public $reDefense = false;
     public $reDefenseOn = '';
+    public $isDraft = false;
 
     // Manuscript
     public $manuscript;
@@ -115,8 +116,18 @@ class ScheduleDetail extends Component
             'software_program_rsc' => $this->rscSoftwareProgramContent,
             'general_comments' => $this->generalComments,
             'redefense_status' => $this->reDefense,
-            'is_draft' => false
+            'is_draft' => $this->isDraft
         ]);
+
+        if ($this->reDefense)
+        {
+            $start = Carbon::parse($this->reDefenseOn)->format('Y-m-d H:i:s');
+            $end = Carbon::parse($this->reDefenseOn)->addHours(2)->format('Y-m-d H:i:s');
+
+            $this->schedule->start = $start;
+            $this->schedule->end = $end;
+            $this->schedule->save();
+        }
 
         session()->flash('success', 'RSC uploaded.');
 
@@ -157,7 +168,7 @@ class ScheduleDetail extends Component
         $manuscripts = $this->schedule->team->manuscripts;
 
         $rscs = $this->schedule->team->rscs()->where('is_draft', false)->get();
-        
+
         return view('livewire.schedule-detail', [
             'schedule' => $this->schedule,
             'manuscripts' => $manuscripts,

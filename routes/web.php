@@ -1,19 +1,20 @@
 <?php
 
 use App\Livewire\User;
+use App\Livewire\Venue;
 use App\Livewire\Course;
+use App\Livewire\Archive;
 use App\Livewire\Section;
+use App\Livewire\Schedule;
 use App\Livewire\Dashboard;
 use App\Livewire\TeamAndTitle;
+use App\Livewire\ScheduleDetail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleLoginController;
+use App\Http\Controllers\ViewRscFileController;
 use App\Http\Controllers\FacebookLoginController;
 use App\Http\Controllers\ViewManuscriptFileController;
-use App\Livewire\Archive;
-use App\Livewire\Schedule;
-use App\Livewire\ScheduleDetail;
-use App\Livewire\Venue;
 
 Route::get('/', function () {
     return view('welcome');
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
     
     //View file
     Route::post('/view-manuscript-file/{manuscript}', ViewManuscriptFileController::class)->middleware(['role:admin|secretary|student'])->name('manuscript.show');
+    Route::post('/view-rsc-file/{rsc}', ViewRscFileController::class)->middleware(['role:admin|secretary|student'])->name('rsc.show');
 });
 
 require __DIR__.'/auth.php';

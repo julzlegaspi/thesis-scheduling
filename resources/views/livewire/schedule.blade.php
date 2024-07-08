@@ -240,6 +240,9 @@
 
                     </div>
                     <x-save-update-button methodName="store">Add new schedule</x-save-update-button>
+                    <div wire:loading wire:target="store">
+                        Loading...please wait.
+                    </div>
                 </form>
             </div>
         </div>

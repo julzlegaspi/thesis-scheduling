@@ -247,6 +247,9 @@
 
                     </div>
                     <x-save-update-button methodName="store" class="mt-5">Create new team</x-save-update-button>
+                    <div wire:loading wire:target="store">
+                        Loading...please wait.
+                    </div>
                 </form>
             </div>
         </div>
@@ -388,9 +391,13 @@
 
                     </div>
                     <x-save-update-button methodName="update">Update</x-save-update-button>
+
                     <x-delete-button wire:click="destroy('{{ $id }}')"
                         wire:confirm="You are about to delete team {{ $name }}. Continue?">Delete
                         team</x-delete-button>
+                    <div wire:loading wire:target="update">
+                        Loading...please wait.
+                    </div>
                 </form>
             </div>
         </div>
