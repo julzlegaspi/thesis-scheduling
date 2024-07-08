@@ -37,4 +37,9 @@ class Team extends Model
     {
         return $this->hasMany(Manuscript::class, 'team_id');
     }
+
+    public function rscs(): HasMany
+    {
+        return $this->hasMany(Rsc::class, 'team_id');
+    }
 }
