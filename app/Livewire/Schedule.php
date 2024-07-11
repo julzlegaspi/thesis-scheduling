@@ -33,30 +33,30 @@ class Schedule extends Component
         'start' => 'required|after_or_equal:now',
         'type' => 'required|integer',
     ];
-    
+
     public function store()
     {
         $this->validate();
 
-        if ( ScheduleModel::where('team_id', $this->team)->first() )
-        {
+        if (ScheduleModel::where('team_id', $this->team)->first()) {
             return $this->addError('team', 'Unable to set the schedule. It has already been scheduled.');
         }
 
         $start = Carbon::parse($this->start)->format('Y-m-d H:i:s');
-        $end = Carbon::parse($this->start)->addHours(2)->format('Y-m-d H:i:s');
+        $end = Carbon::parse($this->start)
+            ->addHours(2)
+            ->format('Y-m-d H:i:s');
 
-        $conflict = ScheduleModel::where(function($query) use ($start, $end) {
-            $query->where('start', '<', $end)
-                  ->where('end', '>', $start);
+        $conflict = ScheduleModel::where(function ($query) use ($start, $end) {
+            $query->where('start', '<', $end)->where('end', '>', $start);
         })->exists();
 
-        if ($conflict)
-        {
+        if ($conflict) {
             return $this->addError('start', 'The selected time slot conflicts with an existing schedule.');
         }
 
         ScheduleModel::create([
+            'user_id' => auth()->user()->id,
             'team_id' => $this->team,
             'venue_id' => $this->venue,
             'start' => $this->start,
@@ -66,6 +66,15 @@ class Schedule extends Component
         ]);
 
         session()->flash('success', 'Schedule created.');
+
+        $this->redirect(Schedule::class);
+    }
+
+    public function destroy(ScheduleModel $schedule)
+    {
+        $schedule->delete();
+
+        session()->flash('success', 'Schedule deleted.');
 
         $this->redirect(Schedule::class);
     }
@@ -83,22 +92,22 @@ class Schedule extends Component
 
     public function getTeamInfo()
     {
-
-        if ($this->team != '')
-        {
+        if ($this->team != '') {
             $this->resetValidation();
-            $teamInfo = Team::where('id', $this->team)->with('members', 'panelists')->first();
+            $teamInfo = Team::where('id', $this->team)
+                ->with('members', 'panelists')
+                ->first();
 
             $this->thesisTitle = $teamInfo->thesis_title;
 
             $this->teamMembers = '';
             foreach ($teamInfo->members as $key => $member) {
-                $this->teamMembers .= $key+1 . '. ' . $member->name . "\n";
+                $this->teamMembers .= $key + 1 . '. ' . $member->name . "\n";
             }
 
             $this->panelists = '';
             foreach ($teamInfo->panelists as $key => $panelist) {
-                $this->panelists .= $key+1 . '. ' . $panelist->name . "\n";
+                $this->panelists .= $key + 1 . '. ' . $panelist->name . "\n";
             }
         } else {
             $this->clear();
@@ -107,7 +116,20 @@ class Schedule extends Component
 
     public function render()
     {
-        $schedules = ScheduleModel::orderBy('start', 'desc')->with('team', 'venue')->paginate();
+        if (auth()->user()->roles->pluck('name')[0] === 'student') {
+            $userId = auth()->user()->id;
+            $schedules = ScheduleModel::orderBy('start', 'desc')
+                ->whereHas('team.members', function ($query) use ($userId) {
+                    $query->where('id', $userId);
+                })
+                ->with('team', 'venue')
+                ->paginate();
+        } else {
+            $schedules = ScheduleModel::orderBy('start', 'desc')
+                ->with('team', 'venue')
+                ->paginate();
+        }
+
         $teams = Team::orderBy('name', 'asc')->with('schedule')->get();
         $venues = Venue::orderBy('name', 'asc')->get();
         return view('livewire.schedule', [

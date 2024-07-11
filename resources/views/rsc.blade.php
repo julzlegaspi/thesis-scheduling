@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduling System Document</title>
+    <title>{{ $rsc->team->thesis_title }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,6 +56,13 @@
         <h2>{{ $rsc->team?->name }}</h2>
         <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($rsc->created_at)->format('F j, Y') }}</p>
         <p><strong>By:</strong> {{ $rsc->uploader?->name }}</p>
+
+        <p>
+            @foreach (\App\Models\Schedule::DEFENSE_STATUS as $key => $defenseStatus)
+                <input type="checkbox" id="{{ $key }}" {{ ($key == $rsc->type_of_defense) ? 'checked' : '' }}>
+                <label for="{{ $key }}">{{ $defenseStatus }}</label>&nbsp;
+            @endforeach
+        </p>
 
         <h3>Manuscript</h3>
         <table>

@@ -15,6 +15,7 @@ use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\ViewRscFileController;
 use App\Http\Controllers\FacebookLoginController;
 use App\Http\Controllers\ViewManuscriptFileController;
+use App\Livewire\Approval;
 
 Route::get('/', function () {
     return view('welcome');
@@ -50,7 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/venues', Venue::class)->name('venues.index');
     Route::get('/archives', Archive::class)->name('archives.index');
     //Panelist
-
+    Route::get('/approvals', Approval::class)->middleware('role:panelist')->name('approvals.index');
 
     //Secretary
 

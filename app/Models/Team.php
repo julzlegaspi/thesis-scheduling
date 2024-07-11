@@ -13,6 +13,8 @@ class Team extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $guarded = [];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
