@@ -59,7 +59,7 @@
 
         <p>
             @foreach (\App\Models\Schedule::DEFENSE_STATUS as $key => $defenseStatus)
-                <input type="checkbox" id="{{ $key }}" {{ ($key == $rsc->type_of_defense) ? 'checked' : '' }}>
+                <input type="checkbox" id="{{ $key }}" {{ ($key == $rsc->status) ? 'checked' : '' }}>
                 <label for="{{ $key }}">{{ $defenseStatus }}</label>&nbsp;
             @endforeach
         </p>

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureHasStore
+class EnsureStudentRoleHasCourseAndSection
 {
     /**
      * Handle an incoming request.
@@ -16,13 +16,11 @@ class EnsureHasStore
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check())
-        {
+        if (Auth::check()) {
             $user = Auth::user();
 
-            if (count($user->stores) <= 0)
-            {
-                return redirect()->route('stores.index');
+            if (is_null($user->course_id) && is_null($user->section_id) && $user->roles()->pluck('name')[0] === 'student') {
+                return redirect()->route('complete.profile.index');
             }
         }
 

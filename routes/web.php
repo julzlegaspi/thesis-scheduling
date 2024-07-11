@@ -16,6 +16,7 @@ use App\Http\Controllers\ViewRscFileController;
 use App\Http\Controllers\FacebookLoginController;
 use App\Http\Controllers\ViewManuscriptFileController;
 use App\Livewire\Approval;
+use App\Livewire\CompleteProfile;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,7 +32,7 @@ Route::middleware(['guest'])->group(function () {
 });
 
 // Authenticated route
-Route::middleware(['auth', 'verified'])->group(function() {
+Route::middleware(['auth', 'verified', 'ensure_student_has_course_and_section'])->group(function() {
     //Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -42,7 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
 
     //Schedules
     Route::get('/schedules', Schedule::class)->name('schedules.index');
-    Route::get('/schedules/details/{schedule}', ScheduleDetail::class)->middleware(['role:admin|secretary|student'])->name('schedule.show');
+    Route::get('/schedules/details/{schedule}', ScheduleDetail::class)->name('schedule.show');
 
     //Admin
     Route::get('/courses', Course::class)->name('courses.index');
@@ -60,8 +61,10 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/teams-and-titles', TeamAndTitle::class)->middleware(['role:admin|student'])->name('teams.and.titles.index');
     
     //View file
-    Route::post('/view-manuscript-file/{manuscript}', ViewManuscriptFileController::class)->middleware(['role:admin|secretary|student'])->name('manuscript.show');
-    Route::post('/view-rsc-file/{rsc}', ViewRscFileController::class)->middleware(['role:admin|secretary|student'])->name('rsc.show');
+    Route::post('/view-manuscript-file/{manuscript}', ViewManuscriptFileController::class)->name('manuscript.show');
+    Route::post('/view-rsc-file/{rsc}', ViewRscFileController::class)->name('rsc.show');
 });
+
+Route::get('/complete-profile', CompleteProfile::class)->name('complete.profile.index');
 
 require __DIR__.'/auth.php';

@@ -11,7 +11,6 @@ class Dashboard extends Component
 {
     public $events = [];
 
-
     public function mount()
     {
         $this->fetchEvents();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureStudentRoleHasCourseAndSection;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'ensure_student_has_course_and_section' => EnsureStudentRoleHasCourseAndSection::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
