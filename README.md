@@ -1,2 +1,1 @@
-## KainPoTayo
-### Contactless table ordering menu
+## Thesis Scheduling
