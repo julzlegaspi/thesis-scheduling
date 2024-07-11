@@ -145,8 +145,8 @@
                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
                                                 </li>
                                                 <li>
-                                                    <button type="button" wire:click="destroy('{{ $schedule->id }}')" wire:confirm="You are about to delete scheduled defense. Continue?"
-                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</button>
+                                                    <a href="#" wire:click="destroy('{{ $schedule->id }}')" wire:confirm="You are about to delete scheduled defense. Continue?"
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
                                                 </li>
                                             </ul>
                                         </div>

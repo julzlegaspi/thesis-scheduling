@@ -30,7 +30,7 @@ class Dashboard extends Component
                 'teamName' => $schedule->team->name,
                 'members' => $schedule->team->members,
                 'panelists' => $schedule->team->panelists,
-                'venue' => $schedule->venue->name,
+                'venue' => $schedule->venue?->name,
                 'typeOfDefense' => Schedule::DEFENSE_STATUS[$schedule->type_of_defense],
                 'start' => Carbon::parse($schedule->start)->format('Y-m-d H:i:s'),
                 'end' => Carbon::parse($schedule->end)->format('Y-m-d H:i:s'),

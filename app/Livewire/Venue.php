@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Rule;
 use App\Models\Venue as VenueModel;
+use Illuminate\Database\QueryException;
 
 class Venue extends Component
 {
@@ -56,6 +57,10 @@ class Venue extends Component
 
     public function destroy(VenueModel $venue)
     {
+        if ($venue->schedules()->count() > 0) {
+            return $this->addError('name', 'Cannot delete venue that have scheduled.');
+        }
+        
         $venue->delete();
 
         session()->flash('success', 'Venue deleted.');

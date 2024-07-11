@@ -96,6 +96,10 @@ class User extends Component
 
     public function destroy(UserModel $user)
     {
+        if ($user->teams()->count() > 0) {
+            return $this->addError('name', 'Cannot delete user that have team.');
+        }
+
         $user->delete();
 
         session()->flash('success', 'User deleted.');

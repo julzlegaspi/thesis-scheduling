@@ -154,7 +154,7 @@ class ScheduleDetail extends Component
 
         if ($schedule)
         {
-            $this->isHappeningNowStatus = 'true';
+            $this->isHappeningNowStatus = 'false';
         }
     }
 
