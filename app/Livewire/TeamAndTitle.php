@@ -49,7 +49,7 @@ class TeamAndTitle extends Component
         foreach ($team->panelists as $panelist) {
             $team->approvalStatus()->create([
                 'user_id' => $panelist->id,
-                'status' => Schedule::PENDING,
+                'status' => Schedule::FOR_PANELIST_APPROVAL,
             ]);
         }
 
@@ -98,7 +98,7 @@ class TeamAndTitle extends Component
             {
                 $this->team->approvalStatus()->create([
                     'user_id' => $panelist,
-                    'status' => Schedule::PENDING
+                    'status' => Schedule::FOR_PANELIST_APPROVAL
                 ]);
             }
         }

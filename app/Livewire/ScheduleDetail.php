@@ -35,7 +35,7 @@ class ScheduleDetail extends Component
 
     public function mount(Schedule $schedule)
     {
-        $schedule->load('team', 'venue');
+        $schedule->load('team', 'venue', 'team.approvalStatus');
 
         $this->schedule = $schedule;
 
