@@ -5,6 +5,8 @@ namespace App\Livewire;
 use App\Models\Team;
 use App\Models\User;
 use Livewire\Component;
+use App\Models\Schedule;
+use App\Models\ApprovalStatus;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -44,6 +46,13 @@ class TeamAndTitle extends Component
         $team->members()->sync($this->members);
         $team->panelists()->sync($this->panelists);
 
+        foreach ($team->panelists as $panelist) {
+            $team->approvalStatus()->create([
+                'user_id' => $panelist->id,
+                'status' => Schedule::PENDING,
+            ]);
+        }
+
         session()->flash('success', 'Team created.');
 
         $this->redirect(TeamAndTitle::class);
@@ -70,12 +79,29 @@ class TeamAndTitle extends Component
     {
         $this->validate();
 
+        foreach ($this->team->panelists as $panelist) {
+            if(!in_array($panelist->id, $this->panelists))
+            {
+                $this->team->approvalStatus()->where('user_id', $panelist->id)->delete();
+            } 
+        }
+
         $this->team->name = $this->name;
         $this->team->thesis_title = $this->thesisTitle;
         $this->team->save();
 
         $this->team->members()->sync($this->members);
         $this->team->panelists()->sync($this->panelists);
+
+        foreach ($this->panelists as $panelist) {
+            if (!$this->team->approvalStatus()->where('user_id', $panelist)->first())
+            {
+                $this->team->approvalStatus()->create([
+                    'user_id' => $panelist,
+                    'status' => Schedule::PENDING
+                ]);
+            }
+        }
 
         session()->flash('success', 'Team updated.');
 
@@ -146,7 +172,10 @@ class TeamAndTitle extends Component
                 ->where('course_id', auth()->user()->course_id)
                 ->where('section_id', auth()->user()->course_id)
                 ->with('course', 'section')
-                ->get();
+                ->get()
+                ->groupBy(function ($item) {
+                    return $item->course->name;
+                });
 
             // Get all teams created by the current user
             $createdTeams = Team::where('user_id', auth()->user()->id)

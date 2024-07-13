@@ -44,4 +44,9 @@ class Team extends Model
     {
         return $this->hasMany(Rsc::class, 'team_id');
     }
+
+    public function approvalStatus(): HasMany
+    {
+        return $this->hasMany(ApprovalStatus::class);
+    }
 }
