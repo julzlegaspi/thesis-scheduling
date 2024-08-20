@@ -13,6 +13,8 @@ class Schedule extends Component
 {
     use WithPagination;
 
+    public int $id;
+
     public $team = '';
 
     public $thesisTitle = '';
@@ -38,22 +40,7 @@ class Schedule extends Component
     {
         $this->validate();
 
-        if (ScheduleModel::where('team_id', $this->team)->first()) {
-            return $this->addError('team', 'Unable to set the schedule. It has already been scheduled.');
-        }
-
-        $start = Carbon::parse($this->start)->format('Y-m-d H:i:s');
-        $end = Carbon::parse($this->start)
-            ->addHours(2)
-            ->format('Y-m-d H:i:s');
-
-        $conflict = ScheduleModel::where(function ($query) use ($start, $end) {
-            $query->where('start', '<', $end)->where('end', '>', $start);
-        })->exists();
-
-        if ($conflict) {
-            return $this->addError('start', 'The selected time slot conflicts with an existing schedule.');
-        }
+        $this->checkConflict();
 
         ScheduleModel::create([
             'user_id' => auth()->user()->id,
@@ -70,6 +57,37 @@ class Schedule extends Component
         $this->redirect(Schedule::class);
     }
 
+    public function edit(ScheduleModel $schedule)
+    {
+        $schedule->load('team', 'venue');
+        $this->id = $schedule->id;
+        $this->team = $schedule->team_id;
+        $this->getTeamInfo();
+        $this->venue = $schedule->venue->id;
+        $this->start = $schedule->start;
+        $this->type = $schedule->type_of_defense;
+    }
+
+    public function update()
+    {
+        $this->validate();
+
+        $this->checkConflict();
+        
+        $schedule = ScheduleModel::where('id', $this->id)->first();
+        $schedule->team_id = $this->team;
+        $schedule->venue_id = $this->venue;
+        $schedule->user_id = auth()->user()->id;
+        $schedule->start = $this->start;
+        $schedule->end = Carbon::parse($this->start)->addHours(2);
+        $schedule->type_of_defense = $this->type;
+        $schedule->save();
+
+        session()->flash('success', 'Schedule updated.');
+
+        $this->redirect(Schedule::class);
+    }
+
     public function destroy(ScheduleModel $schedule)
     {
         $schedule->delete();
@@ -81,6 +99,7 @@ class Schedule extends Component
 
     public function clear()
     {
+        $this->id;
         $this->team = '';
         $this->thesisTitle = '';
         $this->teamMembers = '';
@@ -88,6 +107,26 @@ class Schedule extends Component
         $this->venue = '';
         $this->start = '';
         $this->resetValidation();
+    }
+
+    public function checkConflict()
+    {
+        if (ScheduleModel::where('team_id', $this->team)->first()) {
+            return $this->addError('team', 'Unable to set the schedule. It has already been scheduled.');
+        }
+
+        $start = Carbon::parse($this->start)->format('Y-m-d H:i:s');
+        $end = Carbon::parse($this->start)
+            ->addHours(2)
+            ->format('Y-m-d H:i:s');
+
+        $conflict = ScheduleModel::where(function ($query) use ($start, $end) {
+            $query->where('start', '<', $end)->where('end', '>', $start);
+        })->exists();
+
+        if ($conflict) {
+            return $this->addError('start', 'The selected time slot conflicts with an existing schedule.');
+        }
     }
 
     public function getTeamInfo()
