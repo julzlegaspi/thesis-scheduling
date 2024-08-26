@@ -257,7 +257,7 @@
         </div>
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="styled-manuscript" role="tabpanel"
             aria-labelledby="manuscript-tab">
-            @canany(['secretary.create', 'admin.create'])
+            @canany(['student.create', 'admin.create'])
                 <x-primary-button data-modal-target="add-manuscript-modal" data-modal-toggle="add-manuscript-modal">
                     Upload manuscript
                 </x-primary-button>
@@ -514,7 +514,7 @@
         </div>
     @endcan
 
-    @canany(['secretary.create', 'admin.create'])
+    @canany(['student.create', 'admin.create'])
         <!-- Upload manuscript modal -->
         <div id="add-manuscript-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
             class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
