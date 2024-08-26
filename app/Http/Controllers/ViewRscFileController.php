@@ -10,6 +10,11 @@ class ViewRscFileController extends Controller
 {
     public function __invoke(Rsc $rsc)
     {
+        if ($rsc->is_admin)
+        {
+            return response()->file(storage_path('app/'. $rsc->file_name));
+        }
+
         $rsc->load('team', 'uploader');
 
         $data = [

@@ -175,11 +175,16 @@
         </div>
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="styled-rsc" role="tabpanel"
             aria-labelledby="rsc-tab">
-            @canany(['secretary.create', 'admin.create'])
+            @can('secretary.create')
                 <x-primary-button data-modal-target="add-rsc-modal" data-modal-toggle="add-rsc-modal">
                     Upload RSC
                 </x-primary-button>
-            @endcanany
+            @endcan
+            @can('admin.create')
+                <x-primary-button data-modal-target="admin-add-rsc-modal" data-modal-toggle="admin-add-rsc-modal">
+                    Upload RSC
+                </x-primary-button>
+            @endcan
             <div class="flex flex-col">
                 <div class="overflow-x-auto rounded-lg">
                     <div class="inline-block min-w-full align-middle">
@@ -328,7 +333,7 @@
         </div>
     </div>
 
-    @canany(['secretary.create', 'admin.create'])
+    @can('secretary.create')
         <!-- Upload RSC modal -->
         <div id="add-rsc-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
             class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -461,7 +466,53 @@
                 </div>
             </div>
         </div>
-    @endcanany
+    @endcan
+
+    @can('admin.create')
+        {{-- Admin can upload only RSC file --}}
+        <div id="admin-add-rsc-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
+            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-md max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            Upload RSC
+                        </h3>
+                        <button type="button" wire:click="clear"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            data-modal-toggle="admin-add-rsc-modal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <form class="p-4 md:p-5">
+                        <div class="mb-4">
+                            <input wire:model="rscForAdmin" type="file">
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">PDF, DOCX, DOC
+                            </p>
+
+                            <x-input-error :messages="$errors->get('rscForAdmin')" class="mt-2" />
+
+                        </div>
+
+                        <x-save-update-button methodName="uploadRSCForAdmin" wire:loading.attr="disabled">Upload
+                            RSC</x-save-update-button>
+                        <!-- Loading Indicator -->
+                        <div wire:loading>
+                            Loading...please wait.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endcan
 
     @canany(['secretary.create', 'admin.create'])
         <!-- Upload manuscript modal -->

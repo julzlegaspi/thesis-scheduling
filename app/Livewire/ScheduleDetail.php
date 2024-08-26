@@ -26,6 +26,8 @@ class ScheduleDetail extends Component
     public $reDefenseOn = '';
     public $isDraft = false;
 
+    public $rscForAdmin;
+
     // Manuscript
     public $manuscript;
     public $isDetailsTabSelected = 'false';
@@ -58,6 +60,35 @@ class ScheduleDetail extends Component
         }
 
         $this->happeningNowStatus();
+    }
+
+    public function uploadRSCForAdmin()
+    {
+        $this->validate([
+            'rscForAdmin' => 'required|file|mimes:pdf,doc,docx'
+        ]);
+
+        $file = $this->rscForAdmin->store('rsc');
+
+        Rsc::create([
+            'team_id' => $this->schedule->team->id,
+            'user_id' => auth()->user()->id,
+            'status' => 0,
+            'manuscript_rsc' => '',
+            'software_program_dfd_number' => $this->rscSoftwareProgramDfdNumber,
+            'software_program_rsc' => '',
+            'redefense_status' => 0,
+            'is_draft' => $this->isDraft,
+            'is_admin' => true,
+            'file_name' => $file,
+        ]);
+
+        session()->flash('success', 'RSC uploaded.');
+
+        return redirect()->route('schedule.show', [
+            'schedule' => $this->schedule->id,
+            'tabSelected' => 'rsc'
+        ]);
     }
 
     public function uploadManuscript()
