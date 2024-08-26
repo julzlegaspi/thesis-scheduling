@@ -99,7 +99,6 @@ class Schedule extends Component
 
     public function clear()
     {
-        $this->id;
         $this->team = '';
         $this->thesisTitle = '';
         $this->teamMembers = '';

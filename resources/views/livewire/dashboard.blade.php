@@ -71,14 +71,19 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const $targetEl = document.getElementById('schedule-detail-modal');
                 const modal = new Modal($targetEl);
-                
+
                 let calendarEl = document.getElementById('calendar');
                 let calendar = new FullCalendar.Calendar(calendarEl, {
-                    events: @json($events),
-                    initialView: 'timeGridFourDay',
+                    initialView: 'dayGridMonth', // Set initial view to month
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay' // Add views here
+                    },
                     slotMinTime: '07:00:00', // Start time
                     slotMaxTime: '21:00:00', // End time
                     nowIndicator: true,
+                    events: @json($events),
                     views: {
                         timeGridFourDay: {
                             type: 'timeGrid',
@@ -88,7 +93,7 @@
                         }
                     },
                     eventClick: function(info) {
-                        console.log(info)
+                        console.log(info);
                         var event = {
                             id: info.event.id,
                             title: info.event.title,
@@ -96,14 +101,17 @@
                             end: info.event.end ? info.event.end.toISOString() : null,
                         };
 
-                        const members = info.event.extendedProps.members.map(member => member.name).join(', ');
-                        const panelists = info.event.extendedProps.panelists.map(member => member.name).join(', ');
+                        const members = info.event.extendedProps.members.map(member => member.name).join(
+                            ', ');
+                        const panelists = info.event.extendedProps.panelists.map(member => member.name)
+                            .join(', ');
                         document.getElementById('thesisTitle').innerHTML = event.title;
                         document.getElementById('teamName').innerHTML = info.event.extendedProps.teamName;
                         document.getElementById('members').innerHTML = members;
                         document.getElementById('panelists').innerHTML = panelists;
                         document.getElementById('venue').innerHTML = info.event.extendedProps.venue;
-                        document.getElementById('typeOfDefense').innerHTML = info.event.extendedProps.typeOfDefense;
+                        document.getElementById('typeOfDefense').innerHTML = info.event.extendedProps
+                            .typeOfDefense;
                         modal.show();
                     }
                 });
@@ -111,10 +119,9 @@
                 calendar.render();
 
                 const modalCloseBtn = document.getElementById('event-modal');
-                modalCloseBtn.addEventListener('click', function () {
+                modalCloseBtn.addEventListener('click', function() {
                     modal.hide();
                 });
-
             });
         </script>
     @endpush
