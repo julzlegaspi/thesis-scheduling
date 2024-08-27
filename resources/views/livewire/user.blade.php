@@ -89,16 +89,14 @@
                                 @endforelse
                             </tbody>
                         </table>
-
                     </div>
                 </div>
             </div>
         </div>
         {{ $users->links() }}
 
-
         <!-- Add modal -->
-        <div id="add-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
+        <div wire:ignore.self id="add-modal" tabindex="-1" aria-hidden="true"
             class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
             <div class="relative p-4 w-full max-w-md max-h-full">
                 <!-- Modal content -->
@@ -145,11 +143,11 @@
 
                                 <label for="role"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
-                                <select id="role" wire:model="role"
+                                <select id="role" wire:model.live="role" wire:change="checkRole"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     <option value="">Select option</option>
-                                    @foreach ($roles as $role)
-                                        <option value="{{ $role->name }}">{{ ucfirst($role->name) }}
+                                    @foreach ($roles as $userRole)
+                                        <option value="{{ $userRole->name }}">{{ ucfirst($userRole->name) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -157,37 +155,54 @@
                                 <x-input-error :messages="$errors->get('role')" class="mt-2" />
                             </div>
 
-                            <div class="col-span-2">
+                            @if ($role === 'panelist')
+                                <div class="col-span-2">
 
-                                <label for="course"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Course</label>
-                                <select id="course" wire:model="course"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option value="">Select option</option>
-                                    @foreach ($courses as $course)
-                                        <option value="{{ $course->id }}">{{ $course->code }} - {{ $course->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                    <input id="isPanelChair" type="checkbox" wire:model.defer="isPanelChair"
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="isPanelChair"
+                                        class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Panel chairman</label>
 
-                                <x-input-error :messages="$errors->get('course')" class="mt-2" />
-                            </div>
+                                    <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                                </div>
+                            @endif
 
-                            <div class="col-span-2">
+                            @if ($role === 'student')
 
-                                <label for="section"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Section</label>
-                                <select id="section" wire:model="section"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option value="">Select option</option>
-                                    @foreach ($sections as $section)
-                                        <option value="{{ $section->id }}">{{ $section->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div class="col-span-2">
 
-                                <x-input-error :messages="$errors->get('section')" class="mt-2" />
-                            </div>
+                                    <label for="course"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Course</label>
+                                    <select id="course" wire:model="course"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option value="">Select option</option>
+                                        @foreach ($courses as $course)
+                                            <option value="{{ $course->id }}">{{ $course->code }} -
+                                                {{ $course->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <x-input-error :messages="$errors->get('course')" class="mt-2" />
+                                </div>
+
+                                <div class="col-span-2">
+
+                                    <label for="section"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Section</label>
+                                    <select id="section" wire:model="section"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option value="">Select option</option>
+                                        @foreach ($sections as $section)
+                                            <option value="{{ $section->id }}">{{ $section->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <x-input-error :messages="$errors->get('section')" class="mt-2" />
+                                </div>
+                            @endif
+
 
                             <div class="col-span-2">
                                 <label for="password"
@@ -266,11 +281,11 @@
 
                                 <label for="role"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
-                                <select id="role" wire:model="role"
+                                <select id="role" wire:model.live="role" wire:change="checkRole"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     <option value="">Select option</option>
-                                    @foreach ($roles as $role)
-                                        <option value="{{ $role->name }}">{{ ucfirst($role->name) }}
+                                    @foreach ($roles as $userRole)
+                                        <option value="{{ $userRole->name }}">{{ ucfirst($userRole->name) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -278,37 +293,53 @@
                                 <x-input-error :messages="$errors->get('role')" class="mt-2" />
                             </div>
 
-                            <div class="col-span-2">
+                            @if ($role === 'panelist')
+                                <div class="col-span-2">
 
-                                <label for="course"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Course</label>
-                                <select id="course" wire:model="course"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option value="">Select option</option>
-                                    @foreach ($courses as $course)
-                                        <option value="{{ $course->id }}">{{ $course->code }} - {{ $course->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                    <input id="isPanelChair" type="checkbox" wire:model.defer="isPanelChair"
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="isPanelChair"
+                                        class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Panel chairman</label>
 
-                                <x-input-error :messages="$errors->get('course')" class="mt-2" />
-                            </div>
+                                    <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                                </div>
+                            @endif
 
-                            <div class="col-span-2">
+                            @if ($role === 'student')
 
-                                <label for="section"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Section</label>
-                                <select id="section" wire:model="section"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option value="">Select option</option>
-                                    @foreach ($sections as $section)
-                                        <option value="{{ $section->id }}">{{ $section->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div class="col-span-2">
 
-                                <x-input-error :messages="$errors->get('section')" class="mt-2" />
-                            </div>
+                                    <label for="course"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Course</label>
+                                    <select id="course" wire:model="course"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option value="">Select option</option>
+                                        @foreach ($courses as $course)
+                                            <option value="{{ $course->id }}">{{ $course->code }} -
+                                                {{ $course->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <x-input-error :messages="$errors->get('course')" class="mt-2" />
+                                </div>
+
+                                <div class="col-span-2">
+
+                                    <label for="section"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Section</label>
+                                    <select id="section" wire:model="section"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option value="">Select option</option>
+                                        @foreach ($sections as $section)
+                                            <option value="{{ $section->id }}">{{ $section->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <x-input-error :messages="$errors->get('section')" class="mt-2" />
+                                </div>
+                            @endif
 
                             <div class="col-span-2">
                                 <label for="password"

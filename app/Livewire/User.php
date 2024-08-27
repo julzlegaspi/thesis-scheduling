@@ -14,13 +14,14 @@ class User extends Component
 
     public UserModel $user;
 
-    public $name = '';
-    public $email = '';
-    public $password = '';
-    public $password_confirmation = '';
+    public string $name = '';
+    public string $email = '';
+    public string $password = '';
+    public string $password_confirmation = '';
     public $course = null;
     public $section = null;
-    public $role = '';
+    public string $role = 'student';
+    public bool $isPanelChair = false;
 
     public $search = '';
 
@@ -49,6 +50,7 @@ class User extends Component
             'password' => bcrypt($this->password),
             'course_id' => $this->course,
             'section_id' => $this->section,
+            'is_panel_chair' => $this->isPanelChair,
         ]);
 
         $user->assignRole($this->role);
@@ -65,6 +67,7 @@ class User extends Component
         $this->course = $user->course_id;
         $this->section = $user->section_id;
         $this->role = $user->roles->pluck('name')[0];
+        $this->isPanelChair = ($user->is_panel_chair) ? true : false;
     }
 
     public function update()
@@ -75,7 +78,8 @@ class User extends Component
             'password' => 'sometimes|nullable|confirmed',
             'course' => 'nullable|required_if:role,student|required_with:section',
             'section' => 'nullable|required_if:role,student|required_with:course',
-            'role' => 'required|string'
+            'role' => 'required|string',
+            'isPanelChair' => 'boolean',
         ]);
 
         $this->user->name = $validated['name'];
@@ -86,7 +90,9 @@ class User extends Component
         {
             $this->user->password = bcrypt($validated['password']);
         }
+        $this->user->is_panel_chair = $validated['isPanelChair'];
         $this->user->syncRoles([$validated['role']]);
+
         $this->user->save();
 
         session()->flash('success', 'User updated.');
@@ -107,6 +113,21 @@ class User extends Component
         $this->redirect(User::class);
     }
 
+    public function checkRole()
+    {
+        if ($this->role === 'student')
+        {
+            $this->isPanelChair = false;
+        }
+
+        if ($this->role === 'panelist')
+        {
+            $this->course = null;
+            $this->section = null;
+        }
+
+    }
+
     public function clear()
     {
         $this->name = '';
@@ -116,6 +137,7 @@ class User extends Component
         $this->course = null;
         $this->section = null;
         $this->role = '';
+        $this->isPanelChair = '';
         $this->resetValidation();
     }
 
