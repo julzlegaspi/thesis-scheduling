@@ -204,10 +204,17 @@
                                         wire:model="panelists.{{ $panelistKey }}"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <option value="">Select panelist</option>
-                                        @foreach ($panelistUsers as $panelistUser)
-                                            <option value="{{ $panelistUser->id }}">{{ $panelistUser->name }}
-                                            </option>
-                                        @endforeach
+                                        @if ($loop->first)
+                                            @foreach ($panelistChairUsers as $panelistChair)
+                                                <option value="{{ $panelistChair->id }}">{{ $panelistChair->name }}
+                                                </option>
+                                            @endforeach
+                                        @else
+                                            @foreach ($panelistMemberUsers as $panelistMember)
+                                                <option value="{{ $panelistMember->id }}">{{ $panelistMember->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                     <button type="button" title="Remove panelist"
                                         wire:click="removePanelist('{{ $panelistKey }}')"
@@ -222,7 +229,7 @@
                                     </button>
                                 </div>
                                 <x-input-error :messages="$errors->get('panelists.' . $panelistKey)" />
-                                @if ($panelistKey == 0)
+                                @if ($panelistKey === 0)
                                     <div class="flex items-center">
                                         <input disabled checked id="disabled-checked-checkbox" type="checkbox"
                                             value=""
@@ -341,16 +348,23 @@
                             <label for="panelists"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Panelists</label>
 
-                            @foreach ($panelists as $panelistKey => $panelist)
+                                @foreach ($panelists as $panelistKey => $panelist)
                                 <div class="flex item-center mt-2">
                                     <select id="panelists.{{ $panelistKey }}"
                                         wire:model="panelists.{{ $panelistKey }}"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <option value="">Select panelist</option>
-                                        @foreach ($panelistUsers as $panelistUser)
-                                            <option value="{{ $panelistUser->id }}">{{ $panelistUser->name }}
-                                            </option>
-                                        @endforeach
+                                        @if ($loop->first)
+                                            @foreach ($panelistChairUsers as $panelistChair)
+                                                <option value="{{ $panelistChair->id }}">{{ $panelistChair->name }}
+                                                </option>
+                                            @endforeach
+                                        @else
+                                            @foreach ($panelistMemberUsers as $panelistMember)
+                                                <option value="{{ $panelistMember->id }}">{{ $panelistMember->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                     <button type="button" title="Remove panelist"
                                         wire:click="removePanelist('{{ $panelistKey }}')"
@@ -365,7 +379,7 @@
                                     </button>
                                 </div>
                                 <x-input-error :messages="$errors->get('panelists.' . $panelistKey)" />
-                                @if ($panelistKey == 0)
+                                @if ($panelistKey === 0)
                                     <div class="flex items-center">
                                         <input disabled checked id="disabled-checked-checkbox" type="checkbox"
                                             value=""

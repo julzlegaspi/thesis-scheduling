@@ -69,8 +69,10 @@ class TeamAndTitle extends Component
         foreach ($team->members as $member) {
             array_push($this->members, $member->id);
         }
+        
+        $panelists = $team->panelists->sortByDesc('is_panel_chair');
 
-        foreach ($team->panelists as $panelist) {
+        foreach ($panelists as $panelist) {
             array_push($this->panelists, $panelist->id);
         }
     }
@@ -153,7 +155,8 @@ class TeamAndTitle extends Component
 
     public function render()
     {
-        $panelistUsers = User::role('panelist')->get();
+        $panelistChairUsers = User::role('panelist')->where('is_panel_chair', true)->get();
+        $panelistMemberUsers = User::role('panelist')->where('is_panel_chair', false)->get();
 
         if (auth()->user()->roles->pluck('name')[0] === 'admin') {
             $teams = Team::with('user', 'members', 'panelists')->paginate();
@@ -203,7 +206,8 @@ class TeamAndTitle extends Component
         return view('livewire.team-and-title', [
             'teams' => $teams,
             'studentUsers' => $studentUsers,
-            'panelistUsers' => $panelistUsers,
+            'panelistChairUsers' => $panelistChairUsers,
+            'panelistMemberUsers' => $panelistMemberUsers,
         ]);
     }
 }

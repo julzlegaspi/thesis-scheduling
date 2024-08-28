@@ -68,7 +68,7 @@
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
 
                                         <span
-                                            class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{{ ucfirst($user->roles()->pluck('name')[0]) }}</span>
+                                            class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{{ ($user->is_panel_chair) ? ucfirst($user->roles()->pluck('name')[0]) .'*' :  ucfirst($user->roles()->pluck('name')[0]) }}</span>
                                     </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
