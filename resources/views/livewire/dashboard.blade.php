@@ -92,6 +92,7 @@
                             }
                         }
                     },
+                    contentHeight: 'auto',
                     eventClick: function(info) {
                         console.log(info);
                         var event = {

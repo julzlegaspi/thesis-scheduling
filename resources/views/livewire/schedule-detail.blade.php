@@ -74,9 +74,7 @@
                     <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Members</dt>
                     <dd class="text-lg font-semibold">
                         @foreach ($schedule->team->members as $member)
-                            {{ $member?->name }}@if (!$loop->last)
-                                ,
-                            @endif
+                            {{ $member?->name }}@if (!$loop->last),@endif
                         @endforeach
                     </dd>
                 </div>
@@ -84,9 +82,7 @@
                     <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Panelists</dt>
                     <dd class="text-lg font-semibold">
                         @foreach ($schedule->team->panelists as $panelist)
-                            {{ $panelist?->name }}@if (!$loop->last)
-                                ,
-                            @endif
+                            {{ $panelist?->name }}@if (!$loop->last),@endif
                         @endforeach
                     </dd>
                 </div>
