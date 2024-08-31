@@ -5,6 +5,7 @@
             <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Teams and Titles</h1>
             <span class="text-base font-normal text-gray-500 dark:text-gray-400">Manage teams and thesis title</span>
         </div>
+        @can('admin.create')
         <div class="items-center sm:flex">
             <div class="flex items-center">
                 <x-primary-button data-modal-target="add-modal" data-modal-toggle="add-modal">
@@ -12,6 +13,7 @@
                 </x-primary-button>
             </div>
         </div>
+        @endcan
     </div>
     <!-- Table -->
     <div class="flex flex-col mt-6">
@@ -27,19 +29,19 @@
                                 </th>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                    Thesis Title
-                                </th>
-                                <th scope="col"
-                                    class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
                                     Members
                                 </th>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                    Panelist
+                                    Thesis Title
                                 </th>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                    Created by
+                                    Experts
+                                </th>
+                                <th scope="col"
+                                    class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                    Panelist
                                 </th>
                             </tr>
                         </thead>
@@ -93,11 +95,13 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white"
+                                    <td class="pt-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white"
                                         colspan="3">
+                                        @can('admin.create')
                                         <x-primary-button data-modal-target="add-modal" data-modal-toggle="add-modal">
                                             Add new team
                                         </x-primary-button>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforelse
@@ -109,7 +113,7 @@
     </div>
     {{ $teams->links() }}
 
-
+    @can('admin.create')
     <!-- Add modal -->
     <div id="add-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -412,4 +416,5 @@
             </div>
         </div>
     </div>
+    @endcan
 </div>

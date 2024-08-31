@@ -22,6 +22,7 @@ class User extends Component
     public $section = null;
     public string $role = 'student';
     public bool $isPanelChair = false;
+    public array $sections = [];
 
     public $search = '';
 
@@ -65,7 +66,7 @@ class User extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->course = $user->course_id;
-        $this->section = $user->section_id;
+        $this->getSections();
         $this->role = $user->roles->pluck('name')[0];
         $this->isPanelChair = ($user->is_panel_chair) ? true : false;
     }
@@ -120,12 +121,28 @@ class User extends Component
             $this->isPanelChair = false;
         }
 
-        if ($this->role === 'panelist')
+        if ($this->role === 'panelist' || $this->role === 'expert')
         {
             $this->course = null;
             $this->section = null;
         }
+    }
 
+    public function getSections()
+    {
+        if ($this->course != null)
+        {
+            $this->sections = [];
+            $course = Course::find($this->course);
+            foreach($course->sections as $section)
+            {
+                $this->sections[] = [
+                    'id' => $section->id,
+                    'name' => $section->name,
+                ];
+            }
+
+        }
     }
 
     public function clear()
@@ -138,6 +155,7 @@ class User extends Component
         $this->section = null;
         $this->role = '';
         $this->isPanelChair = '';
+        $this->sections = [];
         $this->resetValidation();
     }
 
@@ -149,13 +167,11 @@ class User extends Component
             ->with('teams')
             ->paginate();
         $courses = Course::orderBy('name', 'asc')->get();
-        $sections = Section::orderBy('name', 'asc')->get();
         $roles = \Spatie\Permission\Models\Role::all();
 
         return view('livewire.user', [
             'users' => $users,
             'courses' => $courses,
-            'sections' => $sections,
             'roles' => $roles
         ]);
     }

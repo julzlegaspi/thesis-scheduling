@@ -22,6 +22,18 @@ class SectionSeeder extends Seeder
                 'course_id' => 1,
                 'name' => $section
             ]);
+            Section::create([
+                'course_id' => 2,
+                'name' => $section
+            ]);
+            Section::create([
+                'course_id' => 3,
+                'name' => $section
+            ]);
+            Section::create([
+                'course_id' => 4,
+                'name' => $section
+            ]);
         }
     }
 }
