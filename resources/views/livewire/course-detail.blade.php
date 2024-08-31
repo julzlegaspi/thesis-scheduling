@@ -2,19 +2,64 @@
     <!-- Card header -->
     <div class="items-center justify-between lg:flex">
         <div class="mb-4 lg:mb-0">
-            <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Courses</h1>
-            <span class="text-base font-normal text-gray-500 dark:text-gray-400">Manage courses</span>
+            <a href="{{ route('courses.index') }}"
+                class="mb-4 inline-flex items-center font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 12h14M5 12l4-4m-4 4 4 4" />
+                </svg>
+                Back
+            </a>
+            <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Course Details</h1>
+            <span class="text-base font-normal text-gray-500 dark:text-gray-400">Manage course details and
+                sections</span>
+        </div>
+    </div>
+
+    <form class="mt-5">
+        <div class="grid gap-4 mb-4 grid-cols-2">
+            <div class="col-span-2">
+                <label for="code" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Code</label>
+                <input type="text" wire:model="courseCode" id="code"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+
+                <x-input-error :messages="$errors->get('courseCode')" class="mt-2" />
+            </div>
+
+            <div class="col-span-2">
+                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                <input type="text" wire:model="courseName" id="name"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+
+                <x-input-error :messages="$errors->get('courseName')" class="mt-2" />
+            </div>
+
+        </div>
+        <x-save-update-button methodName="updateCourse">Update</x-save-update-button>
+        <x-delete-button wire:click="destroyCourse('{{ $courseId }}')"
+            wire:confirm="You are about to delete course {{ $courseName }}. Continue?">Delete course</x-delete-button>
+        <div wire:loading wire:target="updateCourse,destroyCourse">
+            Loading...please wait.
+        </div>
+    </form>
+
+    {{-- Section details --}}
+    <!-- Card header -->
+    <div class="mt-10 items-center justify-between lg:flex">
+        <div class="mb-4 lg:mb-0">
+            <h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Sections</h2>
         </div>
         <div class="items-center sm:flex">
             <div class="flex items-center">
                 <x-primary-button data-modal-target="add-modal" data-modal-toggle="add-modal">
-                    Add new course
+                    Add new section
                 </x-primary-button>
             </div>
         </div>
     </div>
     <!-- Table -->
-    <div class="flex flex-col mt-6">
+    <div class="flex flex-col mt-2">
         <div class="overflow-x-auto rounded-lg">
             <div class="inline-block min-w-full align-middle">
                 <div class="overflow-hidden shadow sm:rounded-lg">
@@ -23,32 +68,22 @@
                             <tr>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
-                                    Code
-                                </th>
-                                <th scope="col"
-                                    class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
                                     Name
                                 </th>
-
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800">
-                            @forelse ($courses as $course)
+                            @forelse ($course->sections as $section)
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                     <td class="p-4 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <a href="{{ route('course.show', $course) }}"
-                                            class="font-normal text-blue-600 dark:text-blue-500 hover:underline">{{ $course->code }}</a>
+                                        <x-data-link-button data-modal-target="edit-modal"
+                                            wire:click="editSection('{{ $section->id }}')"
+                                            data-modal-toggle="edit-modal">{{ $section->name }}</x-data-link-button>
                                     </td>
-                                    <td
-                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                        {{ $course->name }}
-                                    </td>
-
                                 </tr>
                             @empty
                                 <tr>
-                                    <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white"
-                                        colspan="2">
+                                    <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
                                         No records
                                     </td>
                                 </tr>
@@ -60,7 +95,6 @@
             </div>
         </div>
     </div>
-    {{ $courses->links() }}
 
 
     <!-- Add modal -->
@@ -72,7 +106,7 @@
                 <!-- Modal header -->
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Create New Course
+                        Create New Section
                     </h3>
                     <button type="button" wire:click="clear"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -88,29 +122,20 @@
                 <!-- Modal body -->
                 <form class="p-4 md:p-5">
                     <div class="grid gap-4 mb-4 grid-cols-2">
-                        <div class="col-span-2">
-                            <label for="code"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Code</label>
-                            <input type="text" wire:model="code" id="code"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="ex. BSIT">
-
-                            <x-input-error :messages="$errors->get('code')" class="mt-2" />
-                        </div>
 
                         <div class="col-span-2">
                             <label for="name"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                            <input type="text" wire:model="name" id="name"
+                            <input type="text" wire:model="sectionName" id="name"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="Type course name">
+                                placeholder="4A">
 
-                            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('sectionName')" class="mt-2" />
                         </div>
 
                     </div>
-                    <x-save-update-button methodName="store">Add new course</x-save-update-button>
-                    <div wire:loading wire:target="store">
+                    <x-save-update-button methodName="addSection">Add new section</x-save-update-button>
+                    <div wire:loading wire:target="addSection">
                         Loading...please wait.
                     </div>
                 </form>
@@ -119,7 +144,7 @@
     </div>
 
     <!-- Edit modal -->
-    {{-- <div id="edit-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" wire:ignore.self
+    <div id="edit-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" wire:ignore.self
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <!-- Modal content -->
@@ -127,15 +152,15 @@
                 <!-- Modal header -->
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Edit Course
+                        Edit Section
                     </h3>
                     <button type="button" wire:click="clear"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                         data-modal-toggle="edit-modal">
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                         </svg>
                         <span class="sr-only">Close modal</span>
                     </button>
@@ -143,30 +168,26 @@
                 <!-- Modal body -->
                 <form class="p-4 md:p-5">
                     <div class="grid gap-4 mb-4 grid-cols-2">
-                        <div class="col-span-2">
-                            <label for="code"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Code</label>
-                            <input type="text" wire:model="code" id="code"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="ex. BSIT">
-
-                            <x-input-error :messages="$errors->get('code')" class="mt-2" />
-                        </div>
 
                         <div class="col-span-2">
                             <label for="name"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                            <input type="text" wire:model="name" id="name"
+                            <input type="text" wire:model="sectionName" id="name"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="Type course name">
+                                placeholder="Type section name">
 
-                            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('sectionName')" class="mt-2" />
                         </div>
                     </div>
-                    <x-save-update-button methodName="update">Update</x-save-update-button>
-                    <x-delete-button wire:click="destroy('{{ $id }}')" wire:confirm="You are about to delete course {{ $name }}. Continue?">Delete course</x-delete-button>
+                    <x-save-update-button methodName="updateSection">Update</x-save-update-button>
+                    <x-delete-button wire:click="destroySection('{{ $sectionId }}')"
+                        wire:confirm="You are about to delete section {{ $sectionName }}. Continue?">Delete
+                        section</x-delete-button>
+                    <div wire:loading wire:target="updateSection,destroySection">
+                        Loading...please wait.
+                    </div>
                 </form>
             </div>
         </div>
-    </div> --}}
+    </div>
 </div>
