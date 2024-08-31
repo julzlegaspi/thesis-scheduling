@@ -151,6 +151,16 @@
                                                             wire:confirm="You are about to delete scheduled defense. Continue?"
                                                             class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
                                                     </li>
+                                                    <li class="border-t border-gray-200">
+                                                        <a href="#" wire:click="updateScheduleStatus('{{ $schedule->id }}', 'thesis-defended')"
+                                                            wire:confirm="You are about to update the status. Continue?"
+                                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Thesis Defended</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" wire:click="updateScheduleStatus('{{ $schedule->id }}', 're-defense')"
+                                                            wire:confirm="You are about to update the status. Continue?"
+                                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Re-defense</a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         @endif

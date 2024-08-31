@@ -97,6 +97,25 @@ class Schedule extends Component
         $this->redirect(Schedule::class);
     }
 
+    public function updateScheduleStatus(ScheduleModel $schedule, $status)
+    {
+        if ($status === 'thesis-defended')
+        {
+            $schedule->status = ScheduleModel::THESIS_DEFENDED;
+            $schedule->save();
+        } 
+
+        if ($status === 're-defense')
+        {
+            $schedule->status = ScheduleModel::RE_DEFENSE;
+            $schedule->save();
+        }
+
+        session()->flash('success', 'Status update.');
+
+        $this->redirect(Schedule::class);
+    }
+
     public function clear()
     {
         $this->team = '';

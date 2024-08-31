@@ -28,3 +28,17 @@
     </span>
 @endif
 
+@if ($statusCode == \App\Models\Schedule::THESIS_DEFENDED)
+    <span
+        {{ $attributes->merge(['class' => 'bg-indigo-100 text-indigo-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-900 dark:text-indigo-300']) }}>
+        {{ $slot }}
+    </span>
+@endif
+
+@if ($statusCode == \App\Models\Schedule::RE_DEFENSE)
+    <span
+        {{ $attributes->merge(['class' => 'bg-purple-100 text-purple-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300']) }}>
+        {{ $slot }}
+    </span>
+@endif
+
