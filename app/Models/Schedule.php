@@ -18,6 +18,7 @@ class Schedule extends Model
     public const APPROVED = 2;
     public const DECLINED = 3;
     public const RE_DEFENSE = 4;
+    public const THESIS_DEFENDED = 5;
 
     public const TD = 0;
     public const POD = 1;
@@ -29,7 +30,8 @@ class Schedule extends Model
         1 => 'For Panelist Approval',
         2 => 'Approved',
         3 => 'Declined',
-        4 => 'Re-Defense'
+        4 => 'Re-Defense',
+        5 => 'Thesis Defended',
     ];
 
     public const DEFENSE_STATUS = [
