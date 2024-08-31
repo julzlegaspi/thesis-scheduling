@@ -8,20 +8,21 @@
                 <ul class="pb-2 space-y-2">
                     <li>
                         <a href="{{ route('dashboard') }}"
-                            class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
-                            <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                            class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 {{ request()->segment(1) == 'dashboard' ? 'bg-gray-100 dark:bg-gray-700' : '' }} group dark:text-gray-200 dark:hover:bg-gray-700">
+                            <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 {{ request()->segment(1) == 'dashboard' ? 'text-gray-900 dark:text-white' : '' }} dark:text-gray-400 dark:group-hover:text-white"
                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
                                 <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                             </svg>
                             <span class="ml-3" sidebar-toggle-item>Dashboard</span>
                         </a>
+
                     </li>
                     @can('panelist.read')
                         <li>
                             <a href="{{ route('approvals.index') }}"
-                                class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
-                                <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 {{ request()->segment(1) == 'approvals' ? 'bg-gray-100 dark:bg-gray-700' : '' }} group dark:text-gray-200 dark:hover:bg-gray-700">
+                                <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 {{ request()->segment(1) == 'approvals' ? 'text-gray-900 dark:text-white' : '' }} dark:text-gray-400 dark:group-hover:text-white"
                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     fill="currentColor" viewBox="0 0 24 24">
                                     <path fill-rule="evenodd"
@@ -37,8 +38,8 @@
 
                     <li>
                         <a href="{{ route('schedules.index') }}"
-                            class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
-                            <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                            class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 {{ request()->segment(1) == 'schedules' ? 'bg-gray-100 dark:bg-gray-700' : '' }} group dark:text-gray-200 dark:hover:bg-gray-700">
+                            <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 {{ request()->segment(1) == 'schedules' ? 'text-gray-900 dark:text-white' : '' }} dark:text-gray-400 dark:group-hover:text-white"
                                 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 fill="currentColor" viewBox="0 0 24 24">
                                 <path fill-rule="evenodd"
@@ -53,8 +54,8 @@
                     @canany(['admin.read', 'student.read'])
                         <li>
                             <a href="{{ route('teams.and.titles.index') }}"
-                                class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
-                                <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 {{ request()->segment(1) == 'teams-and-titles' ? 'bg-gray-100 dark:bg-gray-700' : '' }} group dark:text-gray-200 dark:hover:bg-gray-700">
+                                <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 {{ request()->segment(1) == 'teams-and-titles' ? 'text-gray-900 dark:text-white' : '' }} dark:text-gray-400 dark:group-hover:text-white"
                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     fill="currentColor" viewBox="0 0 24 24">
                                     <path fill-rule="evenodd"
@@ -115,7 +116,7 @@
                             <button type="button"
                                 class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                                 aria-controls="dropdown-crud" data-collapse-toggle="dropdown-crud"
-                                aria-expanded="{{ in_array(request()->segment(1), ['courses', 'sections', 'users']) ? 'true' : 'false' }}">
+                                aria-expanded="{{ in_array(request()->segment(1), ['courses', 'sections', 'users', 'course']) ? 'true' : 'false' }}">
                                 <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     fill="currentColor" viewBox="0 0 24 24">
@@ -134,26 +135,26 @@
                                 </svg>
                             </button>
                             <ul id="dropdown-crud"
-                                class="space-y-2 py-2 {{ !in_array(request()->segment(1), ['courses', 'sections', 'users']) ? 'hidden' : '' }}">
+                                class="space-y-2 py-2 {{ !in_array(request()->segment(1), ['courses', 'sections', 'users', 'course']) ? 'hidden' : '' }}">
                                 <li>
                                     <a href="{{ route('courses.index') }}"
-                                        class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Courses</a>
+                                        class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 {{ in_array(request()->segment(1), ['courses', 'course']) ? 'bg-gray-100 dark:bg-gray-700' : '' }} transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Courses</a>
                                 </li>
-                                <li>
+                                {{-- <li>
                                     <a href="{{ route('sections.index') }}"
                                         class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Sections</a>
-                                </li>
+                                </li> --}}
                                 <li>
                                     <a href="{{ route('users.index') }}"
-                                        class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Users</a>
+                                        class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 {{ request()->segment(1) == 'users' ? 'bg-gray-100 dark:bg-gray-700' : '' }} transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Users</a>
                                 </li>
                             </ul>
                         </li>
 
                         <li>
                             <a href="{{ route('venues.index') }}"
-                                class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
-                                <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 {{ request()->segment(1) == 'venues' ? 'bg-gray-100 dark:bg-gray-700' : '' }} group dark:text-gray-200 dark:hover:bg-gray-700">
+                                <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 {{ request()->segment(1) == 'venues' ? 'text-gray-900 dark:text-white' : '' }} dark:text-gray-400 dark:group-hover:text-white"
                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     fill="currentColor" viewBox="0 0 24 24">
                                     <path fill-rule="evenodd"
@@ -168,8 +169,8 @@
 
                         <li>
                             <a href="{{ route('archives.index') }}"
-                                class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700">
-                                <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                                class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 {{ request()->segment(1) == 'archives' ? 'bg-gray-100 dark:bg-gray-700' : '' }} group dark:text-gray-200 dark:hover:bg-gray-700">
+                                <svg class="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 {{ request()->segment(1) == 'archives' ? 'text-gray-900 dark:text-white' : '' }} dark:text-gray-400 dark:group-hover:text-white"
                                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     fill="currentColor" viewBox="0 0 24 24">
                                     <path fill-rule="evenodd"

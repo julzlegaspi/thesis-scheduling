@@ -5,18 +5,19 @@ use App\Livewire\Venue;
 use App\Livewire\Course;
 use App\Livewire\Archive;
 use App\Livewire\Section;
+use App\Livewire\Approval;
 use App\Livewire\Schedule;
 use App\Livewire\Dashboard;
 use App\Livewire\TeamAndTitle;
 use App\Livewire\ScheduleDetail;
+use App\Livewire\CompleteProfile;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\ViewRscFileController;
 use App\Http\Controllers\FacebookLoginController;
 use App\Http\Controllers\ViewManuscriptFileController;
-use App\Livewire\Approval;
-use App\Livewire\CompleteProfile;
+use App\Livewire\CourseDetail;
 
 Route::get('/', function () {
     return view('welcome');
@@ -47,6 +48,7 @@ Route::middleware(['auth', 'verified', 'ensure_student_has_course_and_section'])
 
     //Admin
     Route::get('/courses', Course::class)->name('courses.index');
+    Route::get('/course/{course}', CourseDetail::class)->name('course.show');
     Route::get('/sections', Section::class)->name('sections.index');
     Route::get('/users', User::class)->name('users.index');
     Route::get('/venues', Venue::class)->name('venues.index');

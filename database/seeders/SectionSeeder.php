@@ -19,6 +19,7 @@ class SectionSeeder extends Seeder
 
         foreach ($sections as $section) {
             Section::create([
+                'course_id' => 1,
                 'name' => $section
             ]);
         }
