@@ -9,7 +9,8 @@
             <div class="items-center sm:flex">
                 <div class="flex items-center">
                     <a href="{{ route('teams.and.titles.create') }}"
-                        class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add new team</a>
+                        class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add
+                        new team</a>
                 </div>
             </div>
         @endcan
@@ -49,13 +50,8 @@
                             @forelse ($teams as $team)
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                     <td class="p-4 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <x-data-link-button data-modal-target="edit-modal"
-                                            wire:click="edit('{{ $team->id }}')"
-                                            data-modal-toggle="edit-modal">{{ $team->name }}</x-data-link-button>
-                                    </td>
-                                    <td
-                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                        {{ $team->thesis_title }}
+                                        <a href="{{ route('teams.and.titles.edit', $team) }}"
+                                            class="font-normal text-blue-600 dark:text-blue-500 hover:underline">{{ $team->name }}</a>
                                     </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
@@ -72,13 +68,42 @@
                                             @endforeach
                                         </div>
                                     </td>
+
+                                    <td
+                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                        {{ $team->thesis_title }}
+                                    </td>
+
+                                    <td
+                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                        <div class="flex -space-x-4 rtl:space-x-reverse">
+                                            @if (!is_null($team->capa_id))
+                                                <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                                                    src="https://ui-avatars.com/api/?name={{ $team->capa->name }}&rounded=true&background=random"
+                                                    alt="{{ $team->capa->name }}" title="{{ $team->capa->name }}">
+                                            @endif
+                                            @if (!is_null($team->consultant_id))
+                                                <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                                                    src="https://ui-avatars.com/api/?name={{ $team->consultant->name }}&rounded=true&background=random"
+                                                    alt="{{ $team->consultant->name }}"
+                                                    title="{{ $team->consultant->name }}">
+                                            @endif
+                                            @if (!is_null($team->grammarian_id))
+                                                <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                                                    src="https://ui-avatars.com/api/?name={{ $team->grammarian->name }}&rounded=true&background=random"
+                                                    alt="{{ $team->grammarian->name }}"
+                                                    title="{{ $team->grammarian->name }}">
+                                            @endif
+                                        </div>
+                                    </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                                         <div class="flex -space-x-4 rtl:space-x-reverse">
                                             @foreach ($team->panelists as $panelist)
                                                 @if (!empty($panelist->avatar))
                                                     <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
-                                                        src="{{ asset('avatar/' . $panelist->avatar) }}" alt="avatar">
+                                                        src="{{ asset('avatar/' . $panelist->avatar) }}"
+                                                        alt="avatar">
                                                 @else
                                                     <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
                                                         src="https://ui-avatars.com/api/?name={{ $panelist->name }}&rounded=true&background=random"
@@ -87,19 +112,15 @@
                                             @endforeach
                                         </div>
                                     </td>
-                                    <td
-                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                        <span
-                                            class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">{{ $team->user->name }}</span>
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td class="pt-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white"
                                         colspan="3">
                                         @can('admin.create')
-                                             <a href="{{ route('teams.and.titles.create') }}"
-                        class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add new team</a>
+                                            <a href="{{ route('teams.and.titles.create') }}"
+                                                class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add
+                                                new team</a>
                                         @endcan
                                     </td>
                                 </tr>

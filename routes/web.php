@@ -19,6 +19,7 @@ use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\ViewRscFileController;
 use App\Http\Controllers\FacebookLoginController;
 use App\Http\Controllers\ViewManuscriptFileController;
+use App\Livewire\EditTeamAndTitle;
 
 Route::get('/', function () {
     return view('welcome');
@@ -64,6 +65,7 @@ Route::middleware(['auth', 'verified', 'ensure_student_has_course_and_section'])
     Route::prefix('/teams-and-titles')->middleware(['role:admin|student'])->group(function () {
         Route::get('/', TeamAndTitle::class)->middleware(['role:admin|student'])->name('teams.and.titles.index');
         Route::get('/create', CreateTeamAndTitle::class)->name('teams.and.titles.create');
+        Route::get('/{team}/edit', EditTeamAndTitle::class)->name('teams.and.titles.edit');
     });
 
     

@@ -11,8 +11,8 @@
                 </svg>
                 Back
             </a>
-            <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Create Team and Thesis Title</h1>
-            <span class="text-base font-normal text-gray-500 dark:text-gray-400">Create teams, title, and assign members
+            <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Team and Thesis Title Details</h1>
+            <span class="text-base font-normal text-gray-500 dark:text-gray-400">Update teams, title, and assign members
                 and panelists</span>
         </div>
     </div>
@@ -61,7 +61,7 @@
             <div class="col-span-2">
                 <label for="members"
                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Members</label>
-                <select id="members" style="width: 100%;height:50px;" multiple>
+                <select id="members" style="width: 100%;height:50px;" wire:model='members' multiple>
                     @foreach ($courseAndSectionUsers as $member)
                         <option value="{{ $member['id'] }}">{{ $member['name'] }}</option>
                     @endforeach
@@ -73,21 +73,21 @@
             <div class="col-span-2" wire:ignore>
                 <label for=""
                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experts</label>
-                <select style="width: 100%;height:50px;" id="capa">
+                <select style="width: 100%;height:50px;" id="capa" wire:model='capa'>
                     <option value=""></option>
                     @foreach ($capas as $capa)
                         <option value="{{ $capa->id }}">{{ $capa->name }}</option>
                     @endforeach
                 </select>
                 <div class="mt-2"></div>
-                <select style="width: 100%;height:50px;" id="consultant">
+                <select style="width: 100%;height:50px;" id="consultant" wire:model='consultant'>
                     <option value=""></option>
                     @foreach ($consultants as $consultant)
                         <option value="{{ $consultant->id }}">{{ $consultant->name }}</option>
                     @endforeach
                 </select>
                 <div class="mt-2"></div>
-                <select style="width: 100%;height:50px;" id="grammarian">
+                <select style="width: 100%;height:50px;" id="grammarian" wire:model='grammarian'>
                     <option value=""></option>
                     @foreach ($grammarians as $grammarian)
                         <option value="{{ $grammarian->id }}">{{ $grammarian->name }}</option>
@@ -98,7 +98,7 @@
             <div class="col-span-2" wire:ignore>
                 <label for="panelist"
                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Panelist</label>
-                <select style="width: 100%;height:50px;" id="panelist" multiple>
+                <select style="width: 100%;height:50px;" id="panelist" wire:model='panelists' multiple>
                     <option value=""></option>
                     @foreach ($panelistUsers as $panelist)
                         <option value="{{ $panelist->id }}">{{ $panelist->name }} {{ ($panelist->is_panel_chair) ? '- Panel Chairman' : '' }}</option>
@@ -109,8 +109,8 @@
             </div>
 
         </div>
-        <x-save-update-button methodName="store" class="mt-5">Create new team</x-save-update-button>
-        <div wire:loading wire:target="store">
+        <x-save-update-button methodName="update" class="mt-5">Update</x-save-update-button>
+        <div wire:loading wire:target="update">
             Loading...please wait.
         </div>
     </form>
@@ -198,3 +198,4 @@
         });
     </script>
 @endpush
+

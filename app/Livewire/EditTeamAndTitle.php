@@ -8,11 +8,12 @@ use App\Models\Course;
 use Livewire\Component;
 use App\Models\Schedule;
 use Livewire\Attributes\On;
-use App\Livewire\TeamAndTitle;
 use Illuminate\Support\Facades\DB;
 
-class CreateTeamAndTitle extends Component
+class EditTeamAndTitle extends Component
 {
+    public Team $team;
+    public $id;
     public string $name = '';
     public string $thesisTitle = '';
     public array $members = [];
@@ -22,6 +23,38 @@ class CreateTeamAndTitle extends Component
     public $consultant;
     public $grammarian;
     public array $courseAndSectionUsers = [];
+    
+    public function mount(Team $team)
+    {
+        $this->team = $team;
+        $this->id = $team->id;
+        $this->name = $team->name;
+        $this->thesisTitle = $team->thesis_title;
+        $this->courseAndSection = $team->section_id;
+
+        
+        foreach ($team->members as $member) {
+            array_push($this->members, $member->id);
+        }
+        
+        $memberUsers = User::role('student')->where('section_id', $this->courseAndSection)->get();
+        foreach ($memberUsers as $member) {
+            array_push($this->courseAndSectionUsers, [
+                'id' => $member->id,
+                'name' => $member->name
+            ]);
+        }
+
+        $panelists = $team->panelists->sortByDesc('is_panel_chair');
+
+        foreach ($panelists as $panelist) {
+            array_push($this->panelists, $panelist->id);
+        }
+
+        $this->capa = $team->capa_id;
+        $this->consultant = $team->consultant_id;
+        $this->grammarian = $team->grammarian_id;
+    }
 
     protected $rules = [
         'name' => 'required|string|max:255',
@@ -38,31 +71,39 @@ class CreateTeamAndTitle extends Component
         'panelists.*.distinct' => 'The selected panelist is already selected.',
     ];
 
-    public function store()
+    public function update()
     {
         $this->validate();
 
-        $team = Team::create([
-            'user_id' => auth()->user()->id,
-            'name' => $this->name,
-            'thesis_title' => $this->thesisTitle,
-            'capa_id' => $this->capa,
-            'consultant_id' => $this->consultant,
-            'grammarian_id' => $this->grammarian,
-            'section_id' => $this->courseAndSection,
-        ]);
-
-        $team->members()->sync($this->members);
-        $team->panelists()->sync($this->panelists);
-
-        foreach ($team->panelists as $panelist) {
-            $team->approvalStatus()->create([
-                'user_id' => $panelist->id,
-                'status' => Schedule::FOR_PANELIST_APPROVAL,
-            ]);
+        foreach ($this->team->panelists as $panelist) {
+            if(!in_array($panelist->id, $this->panelists))
+            {
+                $this->team->approvalStatus()->where('user_id', $panelist->id)->delete();
+            } 
         }
 
-        session()->flash('success', 'Team created.');
+        $this->team->name = $this->name;
+        $this->team->thesis_title = $this->thesisTitle;
+        $this->team->capa_id = $this->capa ?? null;
+        $this->team->consultant_id = $this->consultant ?? null;
+        $this->team->grammarian_id = $this->grammarian ?? null;
+        $this->team->section_id = $this->courseAndSection;
+        $this->team->save();
+        
+        $this->team->members()->sync($this->members);
+        $this->team->panelists()->sync($this->panelists);
+
+        foreach ($this->panelists as $panelist) {
+            if (!$this->team->approvalStatus()->where('user_id', $panelist)->first())
+            {
+                $this->team->approvalStatus()->create([
+                    'user_id' => $panelist,
+                    'status' => Schedule::FOR_PANELIST_APPROVAL
+                ]);
+            }
+        }
+
+        session()->flash('success', 'Team updated.');
 
         $this->redirect(TeamAndTitle::class);
     }
@@ -84,6 +125,7 @@ class CreateTeamAndTitle extends Component
                 ];
             }
         }
+        
     }
 
     public function render()
@@ -94,7 +136,7 @@ class CreateTeamAndTitle extends Component
         $grammarians = User::role('grammarian')->get();
         $panelistUsers = User::role('panelist')->get();
 
-        return view('livewire.create-team-and-title', [
+        return view('livewire.edit-team-and-title', [
             'courses' => $courses,
             'capas' => $capas,
             'consultants' => $consultants,
