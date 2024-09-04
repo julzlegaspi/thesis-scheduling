@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Team extends Model
@@ -48,5 +49,20 @@ class Team extends Model
     public function approvalStatus(): HasMany
     {
         return $this->hasMany(ApprovalStatus::class);
+    }
+
+    public function capa(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'capa_id', 'id');
+    }
+
+    public function consultant(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'consultant_id', 'id');
+    }
+
+    public function grammarian(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'grammarian_id', 'id');
     }
 }

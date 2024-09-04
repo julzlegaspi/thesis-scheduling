@@ -17,6 +17,10 @@ return new class extends Migration
             $table->foreignIdFor(User::class);
             $table->string('name');
             $table->string('thesis_title');
+            $table->integer('capa_id')->nullable();
+            $table->integer('consultant_id')->nullable();
+            $table->integer('grammarian_id')->nullable();
+            $table->integer('section_id')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

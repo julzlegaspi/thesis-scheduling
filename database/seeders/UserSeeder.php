@@ -77,6 +77,30 @@ class UserSeeder extends Seeder
                 'role' => 'student',
                 'course_id' => 1,
                 'section_id' => 1
+            ],
+            [
+                'name' => 'CAPA User',
+                'email' => 'capa@example.com',
+                'email_verified_at' => now(),
+                'role' => 'capa',
+                'course_id' => null,
+                'section_id' => null
+            ],
+            [
+                'name' => 'Consultant User',
+                'email' => 'consultant@example.com',
+                'email_verified_at' => now(),
+                'role' => 'consultant',
+                'course_id' => null,
+                'section_id' => null
+            ],
+            [
+                'name' => 'Grammarian User',
+                'email' => 'grammarian@example.com',
+                'email_verified_at' => now(),
+                'role' => 'grammarian',
+                'course_id' => null,
+                'section_id' => null
             ]
         ];
 

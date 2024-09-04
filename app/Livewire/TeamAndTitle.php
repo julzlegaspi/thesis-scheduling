@@ -4,9 +4,11 @@ namespace App\Livewire;
 
 use App\Models\Team;
 use App\Models\User;
+use App\Models\Course;
 use Livewire\Component;
 use App\Models\Schedule;
-use App\Models\ApprovalStatus;
+use Livewire\Attributes\On;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -19,9 +21,12 @@ class TeamAndTitle extends Component
     public $members = [];
     public $panelists = [];
 
+    public $courseAndSection = '';
+
     protected $rules = [
         'name' => 'required|string|max:255',
         'thesisTitle' => 'required|string|max:255',
+        'courseAndSection' => 'sometimes|required',
         'members.*' => 'sometimes|required|distinct',
         'panelists.*' => 'sometimes|required|distinct',
     ];
@@ -35,6 +40,7 @@ class TeamAndTitle extends Component
 
     public function store()
     {
+        dd($this->courseAndSection);
         $this->validate();
 
         $team = Team::create([
@@ -119,6 +125,25 @@ class TeamAndTitle extends Component
         $this->redirect(TeamAndTitle::class);
     }
 
+    #[On('course-change')]
+    public function getMembers()
+    {
+        //get users based on course and section id
+        $users = User::role('student')->where('section_id', $this->courseAndSection)->get();
+        $this->members = [];
+        foreach ($users as $user) {
+            $inMember = DB::table('member_team')->where('user_id', $user->id)->first();
+
+            if (!$inMember)
+            {
+                $this->members[] = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                ];
+            }
+        }
+    }
+
     public function clear()
     {
         $this->id = null;
@@ -157,6 +182,7 @@ class TeamAndTitle extends Component
     {
         $panelistChairUsers = User::role('panelist')->where('is_panel_chair', true)->get();
         $panelistMemberUsers = User::role('panelist')->where('is_panel_chair', false)->get();
+        $courses = Course::orderBy('code', 'asc')->with('sections')->get();
 
         if (auth()->user()->roles->pluck('name')[0] === 'admin') {
             $teams = Team::with('user', 'members', 'panelists')->paginate();
@@ -208,6 +234,7 @@ class TeamAndTitle extends Component
             'studentUsers' => $studentUsers,
             'panelistChairUsers' => $panelistChairUsers,
             'panelistMemberUsers' => $panelistMemberUsers,
+            'courses' => $courses,
         ]);
     }
 }

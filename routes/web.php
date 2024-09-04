@@ -8,16 +8,18 @@ use App\Livewire\Section;
 use App\Livewire\Approval;
 use App\Livewire\Schedule;
 use App\Livewire\Dashboard;
+use App\Livewire\CourseDetail;
 use App\Livewire\TeamAndTitle;
 use App\Livewire\ScheduleDetail;
 use App\Livewire\CompleteProfile;
+use App\Livewire\CreateTeamAndTitle;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\ViewRscFileController;
 use App\Http\Controllers\FacebookLoginController;
 use App\Http\Controllers\ViewManuscriptFileController;
-use App\Livewire\CourseDetail;
+use App\Livewire\EditTeamAndTitle;
 
 Route::get('/', function () {
     return view('welcome');
@@ -60,7 +62,12 @@ Route::middleware(['auth', 'verified', 'ensure_student_has_course_and_section'])
 
 
     //Students
-    Route::get('/teams-and-titles', TeamAndTitle::class)->middleware(['role:admin|student'])->name('teams.and.titles.index');
+    Route::prefix('/teams-and-titles')->middleware(['role:admin|student'])->group(function () {
+        Route::get('/', TeamAndTitle::class)->middleware(['role:admin|student'])->name('teams.and.titles.index');
+        Route::get('/create', CreateTeamAndTitle::class)->name('teams.and.titles.create');
+        Route::get('/{team}/edit', EditTeamAndTitle::class)->name('teams.and.titles.edit');
+    });
+
     
     //View file
     Route::post('/view-manuscript-file/{manuscript}', ViewManuscriptFileController::class)->name('manuscript.show');
