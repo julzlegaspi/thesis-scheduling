@@ -162,7 +162,7 @@ class User extends Component
             
             $validator = Validator::make($data, [
                 'Name' => 'required|string|max:255',
-                'Email' => 'required|email|unique:users,email',
+                'Email' => 'required|email|unique:users,email|ends_with:my.cspc.edu.ph',
                 'Role' => 'required|string',
                 'Course' => 'required',
                 'Section' => 'required'
