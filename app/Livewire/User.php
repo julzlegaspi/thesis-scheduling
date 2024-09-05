@@ -7,9 +7,13 @@ use App\Models\Section;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\User as UserModel;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Livewire\Features\SupportFileUploads\WithFileUploads;
 
 class User extends Component
 {
+    use WithFileUploads;
     use WithPagination;
 
     public UserModel $user;
@@ -23,8 +27,12 @@ class User extends Component
     public string $role = 'student';
     public bool $isPanelChair = false;
     public array $sections = [];
+    public $sortBySectionId = '';
+    public $panelistType = ''; //chair, member
 
     public $search = '';
+
+    public $csvFile;
 
     public function mount()
     {
@@ -128,6 +136,57 @@ class User extends Component
         }
     }
 
+    public function uploadCsv()
+    {
+        $this->validate([
+            'csvFile' => 'required|mimes:csv,txt|max:2048', // 2MB Max
+        ]);
+
+        $path = $this->csvFile->store('uploads');
+
+        $file = Storage::get($path);
+
+        $rows = array_map('str_getcsv', explode("\n", $file));
+
+        $header = array_shift($rows);
+
+        
+        foreach ($rows as $row) {
+
+            
+            if (count($header) != count($row)) {
+                continue;
+            }
+
+            $data = array_combine($header, $row);
+            
+            $validator = Validator::make($data, [
+                'Name' => 'required|string|max:255',
+                'Email' => 'required|email|unique:users,email',
+                'Role' => 'required|string',
+                'Course' => 'required',
+                'Section' => 'required'
+            ]);
+
+            if ($validator->fails()) {
+                continue;
+            }
+            
+            $user = UserModel::create([
+                'name' => $data['Name'],
+                'email' => $data['Email'],
+                'password' => bcrypt('password'),
+            ]);
+
+            $user->assignRole($data['Role']);
+
+        }
+
+        session()->flash('success', 'Users uploaded');
+
+        $this->redirect(User::class);
+    }
+
     public function getSections()
     {
         if ($this->course != null)
@@ -143,6 +202,37 @@ class User extends Component
             }
 
         }
+    }
+
+    public function sortBySection()
+    {
+        $exploadedCourseSectionId = explode(',', $this->sortBySectionId);
+
+        $users = UserModel::role('student')
+            ->where('course_id', $exploadedCourseSectionId[0])
+            ->where('section_id', $exploadedCourseSectionId[1])
+            ->with('teams')
+            ->paginate();
+
+        
+        return $users;
+    }
+
+    public function sortByPanelist()
+    {
+        $isPanelChair = ($this->panelistType == 'chair') ? true : false;
+        $users = UserModel::role('panelist')
+            ->where('is_panel_chair', $isPanelChair)
+            ->paginate();
+
+        return $users;
+    }
+
+    public function clearSorting()
+    {
+        $this->sortBySectionId = '';
+        $this->panelistType = '';
+        $this->resetPage();
     }
 
     public function clear()
@@ -162,10 +252,19 @@ class User extends Component
     public function render()
     {
         // $users = UserModel::orderBy('name', 'asc')->with('course', 'section')->paginate();
-        $users = UserModel::where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('email', 'like', '%' . $this->search . '%')
-            ->with('teams')
-            ->paginate();
+        if ($this->sortBySectionId != '')
+        {
+            $users = $this->sortBySection();
+        } elseif ($this->panelistType != '') {
+            $users = $this->sortByPanelist();
+        } else {
+            $this->sortBySectionId = '';
+            $users = UserModel::where('name', 'like', '%' . $this->search . '%')
+                ->orWhere('email', 'like', '%' . $this->search . '%')
+                ->with('teams')
+                ->paginate();
+        }
+
         $courses = Course::orderBy('name', 'asc')->get();
         $roles = \Spatie\Permission\Models\Role::all();
 
