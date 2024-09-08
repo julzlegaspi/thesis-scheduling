@@ -28,7 +28,10 @@ class User extends Component
     public bool $isPanelChair = false;
     public array $sections = [];
     public $sortBySectionId = '';
-    public $panelistType = ''; //chair, member
+    public string $panelistType = ''; //chair, member
+    public bool $filterByAdmin = false;
+    public bool $filterBySecretary = false;
+    public string $expertType = '';
 
     public $search = '';
 
@@ -204,6 +207,24 @@ class User extends Component
         }
     }
 
+    public function filterByAdminUsers()
+    {
+        $this->clearSorting();
+        $this->filterByAdmin = true;
+        $adminUsers = UserModel::role('admin')->paginate();
+
+        return $adminUsers;
+    }
+
+    public function filterBySecretaryUsers()
+    {
+        $this->clearSorting();
+        $this->filterBySecretary = true;
+        $secretaryUsers = UserModel::role('secretary')->paginate();
+
+        return $secretaryUsers;
+    }
+
     public function sortBySection()
     {
         $exploadedCourseSectionId = explode(',', $this->sortBySectionId);
@@ -228,10 +249,24 @@ class User extends Component
         return $users;
     }
 
+    public function filterByExpertUsers()
+    {
+        if ($this->expertType != '')
+        {
+            $users = UserModel::role($this->expertType)->paginate();
+            return $users;
+        }
+
+        return;
+    }
+
     public function clearSorting()
     {
         $this->sortBySectionId = '';
         $this->panelistType = '';
+        $this->filterByAdmin = false;
+        $this->filterBySecretary = false;
+        $this->expertType = '';
         $this->resetPage();
     }
 
@@ -246,6 +281,11 @@ class User extends Component
         $this->role = '';
         $this->isPanelChair = '';
         $this->sections = [];
+        $this->sortBySectionId = '';
+        $this->panelistType = '';
+        $this->filterByAdmin = false;
+        $this->filterBySecretary = false;
+        $this->expertType = '';
         $this->resetValidation();
     }
 
@@ -257,6 +297,12 @@ class User extends Component
             $users = $this->sortBySection();
         } elseif ($this->panelistType != '') {
             $users = $this->sortByPanelist();
+        } elseif ($this->filterByAdmin) {
+            $users = $this->filterByAdminUsers();
+        } elseif ($this->filterBySecretary){
+            $users = $this->filterBySecretaryUsers();
+        } elseif ($this->expertType != '') {
+            $users = $this->filterByExpertUsers();
         } else {
             $this->sortBySectionId = '';
             $users = UserModel::where('name', 'like', '%' . $this->search . '%')

@@ -45,10 +45,20 @@
                         <div id="dropdown"
                             class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
                             <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                                <div>Sort</div>
+                                <div>Filter</div>
                             </div>
                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
                                 aria-labelledby="dropdownDefaultButton">
+                                <li>
+                                    <a href="#" wire:click="filterByAdminUsers"
+                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">By
+                                        Admin</a>
+                                </li>
+                                <li>
+                                    <a href="#" wire:click="filterBySecretaryUsers"
+                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">By
+                                        Secretary</a>
+                                </li>
                                 <li>
                                     <a href="#" data-modal-target="section-modal"
                                         data-modal-toggle="section-modal"
@@ -61,13 +71,22 @@
                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">By
                                         Panelist</a>
                                 </li>
+                                <li>
+                                    <a href="#" data-modal-target="expert-modal"
+                                        data-modal-toggle="expert-modal"
+                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">By
+                                        Experts</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
-                    @if ($sortBySectionId != '' or $panelistType != '')
+                    <div wire:loading wire:target="filterByAdminUsers,sortBySection,sortByPanelist,filterBySecretaryUsers,filterByExpertUsers">
+                        Loading...
+                    </div>
+                    @if ($sortBySectionId != '' or $panelistType != '' or $filterByAdmin != false or $filterBySecretary != false or $expertType != '')
                         <span id="badge-dismiss-yellow" wire:click="clearSorting"
                             class="cursor-pointer inline-flex items-center px-2 py-1 me-2 mb-2 text-sm font-medium text-yellow-800 bg-yellow-100 rounded dark:bg-yellow-900 dark:text-yellow-300">
-                            Clear sorting
+                            Clear filter
                             <button type="button"
                                 class="inline-flex items-center p-1 ms-2 text-sm text-yellow-400 bg-transparent rounded-sm hover:bg-yellow-200 hover:text-yellow-900 dark:hover:bg-yellow-800 dark:hover:text-yellow-300"
                                 data-dismiss-target="#badge-dismiss-yellow" aria-label="Remove">
@@ -76,7 +95,7 @@
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                         stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                                 </svg>
-                                <span class="sr-only">Clear sorting</span>
+                                <span class="sr-only">Clear filter</span>
                             </button>
                         </span>
                     @endif
@@ -452,7 +471,7 @@
                     <!-- Modal header -->
                     <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                            Sort by Section
+                            Filter by Section
                         </h3>
                         <button type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -508,7 +527,7 @@
                     <!-- Modal header -->
                     <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                            Sort by Panelist
+                            Filter by Panelist
                         </h3>
                         <button type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -536,6 +555,54 @@
                                     <option value="member">Panel member</option>
                                 </select>
                                 <div wire:loading wire:target="sortByPanelist">
+                                    Loading...
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expert sort modal -->
+        <div id="expert-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
+            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-md max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            Filter by Expert
+                        </h3>
+                        <button type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            data-modal-toggle="expert-modal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <form class="p-4 md:p-5">
+                        <div class="grid gap-4 mb-4 grid-cols-2">
+
+                            <div class="col-span-2">
+
+                                <label for="sortPanelist"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Panelist</label>
+                                <select id="sortPanelist" wire:model="expertType" wire:change="filterByExpertUsers"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option value="">Select option</option>
+                                    <option value="capa">CAPA</option>
+                                    <option value="consultant">Consultant</option>
+                                    <option value="grammarian">Grammarian</option>
+                                </select>
+                                <div wire:loading wire:target="filterByExpertUsers">
                                     Loading...
                                 </div>
                             </div>
