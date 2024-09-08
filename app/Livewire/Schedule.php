@@ -40,7 +40,9 @@ class Schedule extends Component
     {
         $this->validate();
 
-        $this->checkConflict();
+        if (ScheduleModel::where('team_id', $this->team)->first()) {
+            return $this->addError('team', 'Unable to set the schedule. It has already been scheduled.');
+        }
 
         ScheduleModel::create([
             'user_id' => auth()->user()->id,
@@ -71,8 +73,6 @@ class Schedule extends Component
     public function update()
     {
         $this->validate();
-
-        $this->checkConflict();
         
         $schedule = ScheduleModel::where('id', $this->id)->first();
         $schedule->team_id = $this->team;
@@ -132,19 +132,18 @@ class Schedule extends Component
         if (ScheduleModel::where('team_id', $this->team)->first()) {
             return $this->addError('team', 'Unable to set the schedule. It has already been scheduled.');
         }
+        // $start = Carbon::parse($this->start)->format('Y-m-d H:i:s');
+        // $end = Carbon::parse($this->start)
+        //     ->addHours(2)
+        //     ->format('Y-m-d H:i:s');
 
-        $start = Carbon::parse($this->start)->format('Y-m-d H:i:s');
-        $end = Carbon::parse($this->start)
-            ->addHours(2)
-            ->format('Y-m-d H:i:s');
+        // $conflict = ScheduleModel::where(function ($query) use ($start, $end) {
+        //     $query->where('start', '<', $end)->where('end', '>', $start);
+        // })->exists();
 
-        $conflict = ScheduleModel::where(function ($query) use ($start, $end) {
-            $query->where('start', '<', $end)->where('end', '>', $start);
-        })->exists();
-
-        if ($conflict) {
-            return $this->addError('start', 'The selected time slot conflicts with an existing schedule.');
-        }
+        // if ($conflict) {
+        //     return $this->addError('start', 'The selected time slot conflicts with an existing schedule.');
+        // }
     }
 
     public function getTeamInfo()
