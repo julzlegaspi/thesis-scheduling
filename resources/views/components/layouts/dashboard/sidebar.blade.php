@@ -186,7 +186,7 @@
                 </ul>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 justify-center hidden w-full p-4 space-x-4 bg-white lg:flex dark:bg-gray-800"
+        {{-- <div class="absolute bottom-0 left-0 justify-center hidden w-full p-4 space-x-4 bg-white lg:flex dark:bg-gray-800"
             sidebar-bottom-menu>
 
             <form action="{{ route('logout') }}" method="post">
@@ -209,7 +209,7 @@
                 Log Out
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
-        </div>
+        </div> --}}
     </div>
 </aside>
 
