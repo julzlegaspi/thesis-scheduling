@@ -6,8 +6,10 @@ use Carbon\Carbon;
 use App\Models\Team;
 use App\Models\Venue;
 use Livewire\Component;
-use App\Models\Schedule as ScheduleModel;
 use Livewire\WithPagination;
+use App\Mail\ScheduleCreated;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Schedule as ScheduleModel;
 
 class Schedule extends Component
 {
@@ -44,7 +46,7 @@ class Schedule extends Component
             return $this->addError('team', 'Unable to set the schedule. It has already been scheduled.');
         }
 
-        ScheduleModel::create([
+        $schedule = ScheduleModel::create([
             'user_id' => auth()->user()->id,
             'team_id' => $this->team,
             'venue_id' => $this->venue,
@@ -53,6 +55,14 @@ class Schedule extends Component
             'status' => ScheduleModel::FOR_PANELIST_APPROVAL,
             'type_of_defense' => $this->type,
         ]);
+
+        //Notify all the panelist
+        if(count($schedule->team->panelists) > 0)
+        {
+            foreach ($schedule->team->panelists as $panelist) {
+                Mail::to($panelist->email)->queue(new ScheduleCreated($panelist, $schedule));
+            }
+        }
 
         session()->flash('success', 'Schedule created.');
 
