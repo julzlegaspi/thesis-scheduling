@@ -28,17 +28,15 @@
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
 
 
-                        <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" title="Sort"
+                        <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" title="Filter"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                             type="button">
                             <svg class="w-6 h-6 text-white-800 dark:text-white" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                                 viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="M8 20V10m0 10-3-3m3 3 3-3m5-13v10m0-10 3 3m-3-3-3 3" />
+                                <path
+                                    d="M5.05 3C3.291 3 2.352 5.024 3.51 6.317l5.422 6.059v4.874c0 .472.227.917.613 1.2l3.069 2.25c1.01.742 2.454.036 2.454-1.2v-7.124l5.422-6.059C21.647 5.024 20.708 3 18.95 3H5.05Z" />
                             </svg>
-
-
                         </button>
 
                         <!-- Dropdown menu -->
@@ -60,6 +58,11 @@
                                         Secretary</a>
                                 </li>
                                 <li>
+                                    <a href="#" wire:click="filterByStudentUsers"
+                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">By
+                                        Students</a>
+                                </li>
+                                <li>
                                     <a href="#" data-modal-target="section-modal"
                                         data-modal-toggle="section-modal"
                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">By
@@ -72,18 +75,24 @@
                                         Panelist</a>
                                 </li>
                                 <li>
-                                    <a href="#" data-modal-target="expert-modal"
-                                        data-modal-toggle="expert-modal"
+                                    <a href="#" data-modal-target="expert-modal" data-modal-toggle="expert-modal"
                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">By
                                         Experts</a>
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    <div wire:loading wire:target="filterByAdminUsers,sortBySection,sortByPanelist,filterBySecretaryUsers,filterByExpertUsers">
+                    <div wire:loading
+                        wire:target="filterByAdminUsers,sortBySection,sortByPanelist,filterBySecretaryUsers,filterByExpertUsers,filterByStudentUsers">
                         Loading...
                     </div>
-                    @if ($sortBySectionId != '' or $panelistType != '' or $filterByAdmin != false or $filterBySecretary != false or $expertType != '')
+                    @if (
+                        $sortBySectionId != '' or
+                            $panelistType != '' or
+                            $filterByAdmin != false or
+                            $filterBySecretary != false or
+                            $expertType != '' or
+                            $filterByStudent != false)
                         <span id="badge-dismiss-yellow" wire:click="clearSorting"
                             class="cursor-pointer inline-flex items-center px-2 py-1 me-2 mb-2 text-sm font-medium text-yellow-800 bg-yellow-100 rounded dark:bg-yellow-900 dark:text-yellow-300">
                             Clear filter
@@ -654,7 +663,8 @@
                                 </p>
 
 
-                                <x-save-update-button methodName="uploadCsv" wire:loading.attr="disabled">Import</x-save-update-button>
+                                <x-save-update-button methodName="uploadCsv"
+                                    wire:loading.attr="disabled">Import</x-save-update-button>
                                 <x-input-error :messages="$errors->get('csvFile')" />
 
                                 <div wire:loading wire:target="uploadCsv">

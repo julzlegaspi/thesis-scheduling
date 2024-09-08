@@ -32,6 +32,7 @@ class User extends Component
     public bool $filterByAdmin = false;
     public bool $filterBySecretary = false;
     public string $expertType = '';
+    public bool $filterByStudent = false;
 
     public $search = '';
 
@@ -225,6 +226,15 @@ class User extends Component
         return $secretaryUsers;
     }
 
+    public function filterByStudentUsers()
+    {
+        $this->clearSorting();
+        $this->filterByStudent = true;
+        $studentUsers = UserModel::role('student')->paginate();
+
+        return $studentUsers;
+    }
+
     public function sortBySection()
     {
         $exploadedCourseSectionId = explode(',', $this->sortBySectionId);
@@ -267,6 +277,7 @@ class User extends Component
         $this->filterByAdmin = false;
         $this->filterBySecretary = false;
         $this->expertType = '';
+        $this->filterByStudent = false;
         $this->resetPage();
     }
 
@@ -286,6 +297,7 @@ class User extends Component
         $this->filterByAdmin = false;
         $this->filterBySecretary = false;
         $this->expertType = '';
+        $this->filterByStudent = false;
         $this->resetValidation();
     }
 
@@ -303,6 +315,8 @@ class User extends Component
             $users = $this->filterBySecretaryUsers();
         } elseif ($this->expertType != '') {
             $users = $this->filterByExpertUsers();
+        } elseif ($this->filterByStudent) {
+            $users = $this->filterByStudentUsers();
         } else {
             $this->sortBySectionId = '';
             $users = UserModel::where('name', 'like', '%' . $this->search . '%')
