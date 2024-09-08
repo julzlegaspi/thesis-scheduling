@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Carbon\Carbon;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Course;
@@ -126,6 +127,17 @@ class EditTeamAndTitle extends Component
             }
         }
         
+    }
+
+    public function destroy(Team $team)
+    {
+        $team->delete();
+
+        $team->schedule()->delete();
+
+        session()->flash('success', 'Team deleted.');
+
+        return $this->redirect(TeamAndTitle::class);
     }
 
     public function render()

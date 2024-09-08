@@ -101,7 +101,8 @@
                 <select style="width: 100%;height:50px;" id="panelist" wire:model='panelists' multiple>
                     <option value=""></option>
                     @foreach ($panelistUsers as $panelist)
-                        <option value="{{ $panelist->id }}">{{ $panelist->name }} {{ ($panelist->is_panel_chair) ? '- Panel Chairman' : '' }}</option>
+                        <option value="{{ $panelist->id }}">{{ $panelist->name }}
+                            {{ $panelist->is_panel_chair ? '- Panel Chairman' : '' }}</option>
                     @endforeach
 
                 </select>
@@ -110,7 +111,12 @@
 
         </div>
         <x-save-update-button methodName="update" class="mt-5">Update</x-save-update-button>
+        <x-delete-button methodName="destroy" class="mt-5" wire:click="destroy('{{ $id }}')"
+            wire:confirm="You are about to delete team {{ $name }}. Continue?">Delete</x-delete-button>
         <div wire:loading wire:target="update">
+            Loading...please wait.
+        </div>
+        <div wire:loading wire:target="destory">
             Loading...please wait.
         </div>
     </form>
@@ -198,4 +204,3 @@
         });
     </script>
 @endpush
-
