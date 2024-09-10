@@ -8,27 +8,23 @@ use App\Models\Venue;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Mail\ScheduleCreated;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Schedule as ScheduleModel;
+use App\Services\ScheduleService;
 
 class Schedule extends Component
 {
     use WithPagination;
 
     public int $id;
-
-    public $team = '';
-
-    public $thesisTitle = '';
-
-    public $teamMembers = '';
-
-    public $panelists = '';
-
+    public string $team = '';
+    public string$thesisTitle = '';
+    public string$teamMembers = '';
+    public string$panelists = '';
+    public array $panelistIds = [];
     public $venue;
-
     public $start;
-
     public $type;
 
     protected $rules = [
@@ -39,11 +35,14 @@ class Schedule extends Component
     ];
 
     public function store()
-    {
+    { 
         $this->validate();
-
-        if (ScheduleModel::where('team_id', $this->team)->first()) {
-            return $this->addError('team', 'Unable to set the schedule. It has already been scheduled.');
+       
+        $isConflict = (new ScheduleService($this->team, $this->start, $this->panelistIds))->checkScheduleConflict();
+        
+        if ($isConflict)
+        {
+            return $this->addError('team', "Unable to set the schedule due to a scheduling conflict with the team name '{$isConflict->team->name}'.");
         }
 
         $schedule = ScheduleModel::create([
@@ -134,26 +133,8 @@ class Schedule extends Component
         $this->panelists = '';
         $this->venue = '';
         $this->start = '';
+        $this->panelistIds = [];
         $this->resetValidation();
-    }
-
-    public function checkConflict()
-    {
-        if (ScheduleModel::where('team_id', $this->team)->first()) {
-            return $this->addError('team', 'Unable to set the schedule. It has already been scheduled.');
-        }
-        // $start = Carbon::parse($this->start)->format('Y-m-d H:i:s');
-        // $end = Carbon::parse($this->start)
-        //     ->addHours(2)
-        //     ->format('Y-m-d H:i:s');
-
-        // $conflict = ScheduleModel::where(function ($query) use ($start, $end) {
-        //     $query->where('start', '<', $end)->where('end', '>', $start);
-        // })->exists();
-
-        // if ($conflict) {
-        //     return $this->addError('start', 'The selected time slot conflicts with an existing schedule.');
-        // }
     }
 
     public function getTeamInfo()
@@ -173,6 +154,7 @@ class Schedule extends Component
 
             $this->panelists = '';
             foreach ($teamInfo->panelists as $key => $panelist) {
+                array_push($this->panelistIds, $panelist->id);
                 $this->panelists .= $key + 1 . '. ' . $panelist->name . "\n";
             }
         } else {
