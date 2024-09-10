@@ -81,14 +81,14 @@
                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experts</label>
                 <select style="width: 100%;height:50px;" id="capa" wire:model='capa'>
                     <option value=""></option>
-                    @foreach ($capas as $capa)
+                    @foreach ($capasAndConsultants as $capa)
                         <option value="{{ $capa->id }}">{{ $capa->name }}</option>
                     @endforeach
                 </select>
                 <div class="mt-2"></div>
                 <select style="width: 100%;height:50px;" id="consultant" wire:model='consultant'>
                     <option value=""></option>
-                    @foreach ($consultants as $consultant)
+                    @foreach ($capasAndConsultants as $consultant)
                         <option value="{{ $consultant->id }}">{{ $consultant->name }}</option>
                     @endforeach
                 </select>

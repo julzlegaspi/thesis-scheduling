@@ -143,15 +143,13 @@ class EditTeamAndTitle extends Component
     public function render()
     {
         $courses = Course::orderBy('code', 'asc')->with('sections')->get();
-        $capas = User::role('capa')->get();
-        $consultants = User::role('consultant')->get();
+        $capasAndConsultants = User::role(['capa', 'consultant'])->get();
         $grammarians = User::role('grammarian')->get();
         $panelistUsers = User::role('panelist')->get();
 
         return view('livewire.edit-team-and-title', [
             'courses' => $courses,
-            'capas' => $capas,
-            'consultants' => $consultants,
+            'capasAndConsultants' => $capasAndConsultants,
             'grammarians' => $grammarians,
             'panelistUsers' => $panelistUsers,
         ]);
