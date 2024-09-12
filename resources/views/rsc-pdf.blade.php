@@ -52,17 +52,17 @@
                 @foreach ($rsc->comments as $comment)
                     @if ($loop->iteration % 2 == 0)
                         <tr class="bg-white border-b border-gray-300">
-                            <td class="py-4 px-6 border-r border-gray-300">{{ strtoupper($comment->chapter) }}</td>
-                            <td class="py-4 px-6 border-r border-gray-300">{{ strtoupper($comment->page_number) }}</td>
-                            <td class="py-4 px-6 border-r border-gray-300">{!! nl2br($comment->comments) !!}</td>
-                            <td class="py-4 px-6">[{{ $comment->user->name }}] <br> {!! nl2br($comment->action_taken) !!}</td>
+                            <td class="py-1 px-2 border-r border-gray-300">{{ strtoupper($comment->chapter) }}</td>
+                            <td class="py-1 px-2 border-r border-gray-300">{{ strtoupper($comment->page_number) }}</td>
+                            <td class="py-1 px-2 border-r border-gray-300">{!! nl2br($comment->comments) !!}</td>
+                            <td class="py-1 px-2">[{{ $comment->user->name }}] <br> {!! nl2br($comment->action_taken) !!}</td>
                         </tr>
                     @else
                         <tr class="bg-gray-50 border-b border-gray-300">
-                            <td class="py-4 px-6 border-r border-gray-300">{{ strtoupper($comment->chapter) }}</td>
-                            <td class="py-4 px-6 border-r border-gray-300">{{ strtoupper($comment->page_number) }}</td>
-                            <td class="py-4 px-6 border-r border-gray-300">{!! nl2br($comment->comments) !!}</td>
-                            <td class="py-4 px-6">[{{ $comment->user->name }}] <br> {!! nl2br($comment->action_taken) !!}</td>
+                            <td class="py-1 px-2 border-r border-gray-300">{{ strtoupper($comment->chapter) }}</td>
+                            <td class="py-1 px-2 border-r border-gray-300">{{ strtoupper($comment->page_number) }}</td>
+                            <td class="py-1 px-2 border-r border-gray-300">{!! nl2br($comment->comments) !!}</td>
+                            <td class="py-1 px-2">[{{ $comment->user->name }}] <br> {!! nl2br($comment->action_taken) !!}</td>
                         </tr>
                     @endif
                    
