@@ -23,7 +23,7 @@
             <div class="flex mb-4">
                 <span class="font-semibold w-1/3 text-lg">DATE : {{ strtoupper(\Carbon\Carbon::parse($rsc->created_at)->format('F j, Y')) }}</span> &nbsp;&nbsp;&nbsp;&nbsp;
                 @foreach (\App\Models\Schedule::DEFENSE_STATUS as $key => $defenseStatus)
-                    {!! ($key == $rsc->status) ? "[ / ] ". $defenseStatus . '&nbsp;&nbsp;&nbsp;' : '[ ] ' . $defenseStatus . '&nbsp;&nbsp;&nbsp;' !!}
+                    {!! ($key == $rsc->type) ? "[ / ] ". $defenseStatus . '&nbsp;&nbsp;&nbsp;' : '[ ] ' . $defenseStatus . '&nbsp;&nbsp;&nbsp;' !!}
                 @endforeach
             </div>
             <div class="flex mb-4">
