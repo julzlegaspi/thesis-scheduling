@@ -52,10 +52,10 @@
 
 <body>
     <div class="container">
-        <p><strong>PROJECT TITLE:</strong> {{ $rsc->team->thesis_title }}</p>
-        <p><strong>TEAM ALIAS:</strong> {{ $rsc->team->name }}</p>
-        <p><strong>DATE:</strong> {{ \Carbon\Carbon::parse($rsc->created_at)->format('F j, Y') }}</p>
-        <p><strong>BY:</strong> {{ $rsc->uploader?->name }}</p>
+        <p><strong>PROJECT TITLE:</strong> {{ strtoupper($rsc->team->thesis_title) }}</p>
+        <p><strong>TEAM ALIAS:</strong> {{ strtoupper($rsc->team->name) }}</p>
+        <p><strong>DATE:</strong> {{ strtoupper(\Carbon\Carbon::parse($rsc->created_at)->format('F j, Y')) }}</p>
+        <p><strong>BY:</strong> {{ strtoupper($rsc->uploader?->name) }}</p>
 
         <p>
             @foreach (\App\Models\Schedule::DEFENSE_STATUS as $key => $defenseStatus)
@@ -80,7 +80,7 @@
                         <td>{{ $comment->chapter }}</td>
                         <td>{{ $comment->page_number }}</td>
                         <td>{!! nl2br($comment->comments) !!}</td>
-                        <td>{!! nl2br($comment->action_taken) !!}</td>
+                        <td>[{{ $comment->user->name }}] <br> {!! nl2br($comment->action_taken) !!}</td>
                     </tr>
                 @endforeach
             </tbody>
