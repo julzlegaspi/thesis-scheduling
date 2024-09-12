@@ -15,11 +15,15 @@ class ViewRscFileController extends Controller
             return response()->file(storage_path('app/'. $rsc->file_name));
         }
 
+        
         $rsc->load('team', 'uploader');
-
+        
         $data = [
             'rsc' => $rsc
         ];
+        
+        return view('rsc-pdf', $data);
+
         $pdf = Pdf::loadView('rsc', $data);
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream();
