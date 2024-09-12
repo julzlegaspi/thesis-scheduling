@@ -39,7 +39,7 @@
     <!-- Table Section -->
     <div class="overflow-x-auto relative mt-8">
         <table class="w-full text-sm text-left text-gray-500 border border-gray-300">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b">
                 <tr>
                     <th scope="col" class="py-3 px-6 border-r border-gray-300">Chapter</th>
                     <th scope="col" class="py-3 px-6 border-r border-gray-300">Page No.</th>
