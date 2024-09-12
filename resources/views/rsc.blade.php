@@ -14,11 +14,11 @@
         }
 
         .container {
-            max-width: 800px;
-            margin: 20px auto;
+            width: 100%;
+            margin: 0;
+            /* Remove margin to extend the layout */
             padding: 20px;
             background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         h1,
@@ -52,71 +52,44 @@
 
 <body>
     <div class="container">
-        <h1>{{ $rsc->team?->thesis_title }}</h1>
-        <h2>{{ $rsc->team?->name }}</h2>
-        <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($rsc->created_at)->format('F j, Y') }}</p>
-        <p><strong>By:</strong> {{ $rsc->uploader?->name }}</p>
+        <p><strong>PROJECT TITLE:</strong> {{ $rsc->team->thesis_title }}</p>
+        <p><strong>TEAM ALIAS:</strong> {{ $rsc->team->name }}</p>
+        <p><strong>DATE:</strong> {{ \Carbon\Carbon::parse($rsc->created_at)->format('F j, Y') }}</p>
+        <p><strong>BY:</strong> {{ $rsc->uploader?->name }}</p>
 
         <p>
             @foreach (\App\Models\Schedule::DEFENSE_STATUS as $key => $defenseStatus)
-                <input type="checkbox" id="{{ $key }}" {{ ($key == $rsc->status) ? 'checked' : '' }}>
+                <input type="checkbox" id="{{ $key }}" {{ $key == $rsc->status ? 'checked' : '' }}>
                 <label for="{{ $key }}">{{ $defenseStatus }}</label>&nbsp;
             @endforeach
         </p>
 
-        <h3>Manuscript</h3>
+        <h3>{{ $rsc::TYPE[$rsc->type] }}</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Chapter</th>
-                    <th>Recommendations Suggestions and Comment (RSC)</th>
-                    <th>Action Taken</th>
+                    <th>CHAPTER</th>
+                    <th>PAGE NO.</th>
+                    <th>RECOMMENDATIONS, SUGGESTIONS AND COMMENTS (RSC)</th>
+                    <th>ACTION TAKEN</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>{{ $rsc->manuscript_chapter }}</td>
-                    <td>{!! nl2br($rsc->manuscript_rsc) !!}</td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="notes">
-            <p><strong>General comments:</strong> {{ $rsc->general_comments ?? 'N/A' }}</p>
-
-            @if ($rsc->redefense_status == true)
-                <p><strong>Re-defense on:</strong>
-                    {{ \Carbon\Carbon::parse($rsc->team->schedule->start)->format('F j, Y @ g:i:s A') }}</p>
-            @endif
-        </div>
-
-        <h3>Software Program</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Module No. (DFD)</th>
-                    <th>Recommendations Suggestions and Comments (RSC)</th>
-                    <th>Action Taken</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td>{!! nl2br($rsc->software_program_rsc) !!}</td>
-                    <td></td>
-                </tr>
+                @foreach ($rsc->comments as $comment)
+                    <tr>
+                        <td>{{ $comment->chapter }}</td>
+                        <td>{{ $comment->page_number }}</td>
+                        <td>{!! nl2br($comment->comments) !!}</td>
+                        <td>{!! nl2br($comment->action_taken) !!}</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
 
         <div class="notes">
             <p><strong>Noted by:</strong></p>
             @foreach ($rsc->team->panelists as $panelist)
-                @if ($loop->first)
-                    <p>{{ $panelist->name }}, Panel Chairman</p>
-                @else
-                    <p>{{ $panelist->name }}, Panel Member {{ $loop->index + 1 }}</p>
-                @endif
+                <p>{{ $panelist->name }}, {{ ($panelist->is_panel_chair ) ? 'Panel Chairman' : 'Panel Member' }}</p>
             @endforeach
         </div>
     </div>

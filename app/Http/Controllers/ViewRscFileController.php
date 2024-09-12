@@ -21,6 +21,7 @@ class ViewRscFileController extends Controller
             'rsc' => $rsc
         ];
         $pdf = Pdf::loadView('rsc', $data);
+        $pdf->setPaper('a4', 'landscape');
         return $pdf->stream();
     }
 }
