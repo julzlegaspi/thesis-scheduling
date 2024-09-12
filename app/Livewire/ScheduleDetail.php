@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\CommentRsc;
 use Carbon\Carbon;
 use Livewire\Component;
 use App\Models\Schedule;
@@ -15,16 +16,11 @@ class ScheduleDetail extends Component
 
     public Schedule $schedule;
 
+    public $rscId = '';
     // RSC
     public $typeOfDefense = '';
-    public $manuscriptChapter = '';
-    public $rscManuscriptContent = '';
-    public $rscSoftwareProgramDfdNumber = '';
-    public $rscSoftwareProgramContent = '';
-    public $generalComments = '';
-    public $reDefense = false;
-    public $reDefenseOn = '';
-    public $isDraft = false;
+    public array $comments = [];
+    public $commentFor = '';
 
     public $rscForAdmin;
 
@@ -33,13 +29,18 @@ class ScheduleDetail extends Component
     public $isDetailsTabSelected = 'false';
     public $isRSCTabSelected = 'false';
     public $isManuscriptTabSelected = 'false';
-    public $isHappeningNowStatus = 'false';
 
     public function mount(Schedule $schedule)
     {
         $schedule->load('team', 'venue', 'team.approvalStatus');
 
         $this->schedule = $schedule;
+
+        array_push($this->comments, [
+            'chapter' => '',
+            'pageNumber' => '',
+            'comments' => '',
+        ]);
 
         if (isset(request()->tabSelected))
         {
@@ -58,8 +59,21 @@ class ScheduleDetail extends Component
                 $this->isManuscriptTabSelected = 'true';
             }
         }
+    }
 
-        $this->happeningNowStatus();
+    public function addComment()
+    {
+        array_push($this->comments, [
+            'chapter' => '',
+            'pageNumber' => '',
+            'comments' => '',
+        ]);
+    }
+
+    public function removeComment($key)
+    {
+        unset($this->comments[$key]);
+        array_values($this->comments);
     }
 
     public function uploadRSCForAdmin()
@@ -73,12 +87,8 @@ class ScheduleDetail extends Component
         Rsc::create([
             'team_id' => $this->schedule->team->id,
             'user_id' => auth()->user()->id,
-            'status' => 0,
-            'manuscript_rsc' => '',
-            'software_program_dfd_number' => $this->rscSoftwareProgramDfdNumber,
-            'software_program_rsc' => '',
-            'redefense_status' => 0,
-            'is_draft' => $this->isDraft,
+            'type' => Schedule::TD,
+            'comment_for' => Rsc::MANUSCRIPT,
             'is_admin' => true,
             'file_name' => $file,
         ]);
@@ -114,53 +124,130 @@ class ScheduleDetail extends Component
 
     public function uploadRsc()
     {
-        $this->validate([
-            'typeOfDefense' => 'required|string',
-            'rscManuscriptContent' => 'required|string',
-            'rscSoftwareProgramContent' => 'required|string',
-            'reDefenseOn' => 'required_if:reDefense,true'
-        ]);
 
-        if ($this->reDefense)
-        {
-            $start = Carbon::parse($this->reDefenseOn)->format('Y-m-d H:i:s');
-            $end = Carbon::parse($this->reDefenseOn)->addHours(2)->format('Y-m-d H:i:s');
-    
-            $conflict = Schedule::where(function($query) use ($start, $end) {
-                $query->where('start', '<', $end)
-                      ->where('end', '>', $start);
-            })->exists();
-    
-            if ($conflict)
-            {
-                return $this->addError('reDefenseOn', 'The selected time slot conflicts with an existing schedule.');
-            }
-        }
+        $validated = $this->validate([
+            'typeOfDefense' => 'required',
+            'commentFor' => 'required',
+            'comments.*.chapter' => 'nullable',
+            'comments.*.pageNumber' => 'nullable',
+            'comments.*.comments' => 'required|string',
+        ], [
+            'comments.*.comments.required' => 'Comment is required.',
+        ]);
         
-        Rsc::create([
+        $rsc = Rsc::create([
             'team_id' => $this->schedule->team->id,
             'user_id' => auth()->user()->id,
-            'status' => $this->typeOfDefense,
-            'manuscript_chapter' => $this->manuscriptChapter,
-            'manuscript_rsc' => $this->rscManuscriptContent,
-            'software_program_dfd_number' => $this->rscSoftwareProgramDfdNumber,
-            'software_program_rsc' => $this->rscSoftwareProgramContent,
-            'general_comments' => $this->generalComments,
-            'redefense_status' => $this->reDefense,
-            'is_draft' => $this->isDraft
+            'type' => $validated['typeOfDefense'],
+            'comment_for' => $validated['commentFor']
         ]);
 
-        if ($this->reDefense)
-        {
-            $start = Carbon::parse($this->reDefenseOn)->format('Y-m-d H:i:s');
-            $end = Carbon::parse($this->reDefenseOn)->addHours(2)->format('Y-m-d H:i:s');
-
-            $this->schedule->start = $start;
-            $this->schedule->end = $end;
-            $this->schedule->save();
+        foreach ($validated['comments'] as $comment) {
+            $rsc->comments()->create([
+                'chapter' => $comment['chapter'],
+                'page_number' => $comment['pageNumber'],
+                'comments' => $comment['comments']
+            ]);
         }
 
         session()->flash('success', 'RSC uploaded.');
+
+        return redirect()->route('schedule.show', [
+            'schedule' => $this->schedule->id,
+            'tabSelected' => 'rsc'
+        ]);
+    }
+
+    public function editRsc(Rsc $rsc)
+    {
+        $this->comments = [];
+        $this->rscId = $rsc->id;
+        $this->typeOfDefense = $rsc->type;
+        $this->commentFor = $rsc->comment_for;
+
+        foreach ($rsc->comments as $comment) {
+            array_push($this->comments, [
+                'id' => $comment->id,
+                'chapter' => $comment->chapter,
+                'pageNumber' => $comment->page_number,
+                'comments' => $comment->comments,
+                'action_taken' => $comment->action_taken
+            ]);
+        }
+    }
+
+    public function updateRsc()
+    {
+        $this->validate([
+            'typeOfDefense' => 'required',
+            'commentFor' => 'required',
+            'comments.*.chapter' => 'nullable',
+            'comments.*.pageNumber' => 'nullable',
+            'comments.*.comments' => 'required|string',
+        ], [
+            'comments.*.comments.required' => 'Comment is required.',
+        ]);
+
+        $rsc = Rsc::find($this->rscId);
+        $rsc->type = $this->typeOfDefense;
+        $rsc->comment_for = $this->commentFor;
+        $rsc->save();
+
+        foreach ($this->comments as $comment) {
+            if (isset($comment['id']))
+            {
+                $rsc->comments()->where('id', $comment['id'])->update([
+                    'chapter' => $comment['chapter'],
+                    'page_number' => $comment['pageNumber'],
+                    'comments' => $comment['comments']
+                ]);
+            } else {
+                $rsc->comments()->create([
+                    'chapter' => $comment['chapter'],
+                    'page_number' => $comment['pageNumber'],
+                    'comments' => $comment['comments']
+                ]);
+            }
+        }
+
+        session()->flash('success', 'RSC updated.');
+
+        return redirect()->route('schedule.show', [
+            'schedule' => $this->schedule->id,
+            'tabSelected' => 'rsc'
+        ]);
+    }
+
+    public function studentUpdateActionTaken()
+    {
+        foreach ($this->comments as $comment) {
+            CommentRsc::where('id', $comment['id'])->update([
+                'action_taken' => null ?? $comment['action_taken'],
+                'user_id' => auth()->user()->id,
+            ]);
+        }
+
+        session()->flash('success', 'RSC updated.');
+
+        return redirect()->route('schedule.show', [
+            'schedule' => $this->schedule->id,
+            'tabSelected' => 'rsc'
+        ]);
+    }
+
+    public function deleteComment(CommentRsc $comment)
+    {
+        $comment->delete();
+
+        unset($this->comments[$comment]);
+        array_values($this->comments);
+    }
+
+    public function deleteRsc(Rsc $rsc)
+    {
+        $rsc->delete();
+
+        session()->flash('success', 'RSC deleted.');
 
         return redirect()->route('schedule.show', [
             'schedule' => $this->schedule->id,
@@ -173,24 +260,13 @@ class ScheduleDetail extends Component
         $this->reset('manuscript');
     }
 
-    public function happeningNowStatus()
-    {
-        $start = Carbon::now()->format('Y-m-d H:i:s');
-        $end = Carbon::now()->addHours(2)->format('Y-m-d H:i:s');
-
-        $schedule = Schedule::where(function($query) use ($start, $end) {
-            $query->where('start', '<', $end)
-                  ->where('end', '>', $start);
-        })->exists();
-
-        if ($schedule)
-        {
-            $this->isHappeningNowStatus = 'false';
-        }
-    }
-
     public function clear()
     {
+        $this->rscId = '';
+        $this->typeOfDefense = '';
+        $this->commentFor = '';
+        $this->comments = [];
+        $this->addComment();
         $this->resetValidation();
     }
 
@@ -198,7 +274,7 @@ class ScheduleDetail extends Component
     {
         $manuscripts = $this->schedule->team->manuscripts;
 
-        $rscs = $this->schedule->team->rscs()->where('is_draft', false)->get();
+        $rscs = $this->schedule->team->rscs()->get();
 
         return view('livewire.schedule-detail', [
             'schedule' => $this->schedule,

@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Rsc;
-use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,12 +13,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rscs', function (Blueprint $table) {
+        Schema::create('comment_rscs', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Team::class);
-            $table->foreignIdFor(User::class);
-            $table->integer('type');
-            $table->integer('comment_for');
+            $table->foreignIdFor(Rsc::class);
+            $table->string('chapter')->nullable();
+            $table->string('page_number')->nullable();
+            $table->text('comments');
+            $table->text('action_taken')->nullable();
+            $table->foreignIdFor(User::class)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rscs');
+        Schema::dropIfExists('comment_rscs');
     }
 };

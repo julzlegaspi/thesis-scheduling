@@ -13,11 +13,6 @@
             </a>
             <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
                 {{ $schedule->team->thesis_title }}
-                @if ($isHappeningNowStatus === 'true')
-                    <span
-                        class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400">Happening
-                        now</span>
-                @endif
             </h1>
             <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{ $schedule->team->name }}</span>
         </div>
@@ -74,7 +69,9 @@
                     <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Members</dt>
                     <dd class="text-lg font-semibold">
                         @foreach ($schedule->team->members as $member)
-                            {{ $member?->name }}@if (!$loop->last),@endif
+                            {{ $member?->name }}@if (!$loop->last)
+                                ,
+                            @endif
                         @endforeach
                     </dd>
                 </div>
@@ -82,7 +79,9 @@
                     <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Panelists</dt>
                     <dd class="text-lg font-semibold">
                         @foreach ($schedule->team->panelists as $panelist)
-                            {{ $panelist?->name }}@if (!$loop->last),@endif
+                            {{ $panelist?->name }}@if (!$loop->last)
+                                ,
+                            @endif
                         @endforeach
                     </dd>
                 </div>
@@ -163,11 +162,6 @@
                 </div>
             </dl>
 
-
-
-
-
-
         </div>
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="styled-rsc" role="tabpanel"
             aria-labelledby="rsc-tab">
@@ -205,6 +199,7 @@
                                             class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
                                             Uploaded on
                                         </th>
+                                        <th scope="col">&nbsp;</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800">
@@ -222,6 +217,7 @@
                                                     @csrf
                                                     <button type="submit"
                                                         class="font-normal text-blue-600 dark:text-blue-500 hover:underline">RSC
+                                                        ({{ $rsc::TYPE[$rsc->comment_for] }})
                                                         #{{ $loop->index + 1 }}</button>
                                                 </form>
                                             </td>
@@ -232,6 +228,55 @@
                                             <td
                                                 class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                                                 {{ \Carbon\Carbon::parse($rsc->created_at)->format('F j, Y g:i:s A') }}
+                                            </td>
+                                            <td>
+                                                @if (!$rsc->is_admin)
+                                                    <button id="dropdownMenuIconButton-{{ $loop->index }}"
+                                                        data-dropdown-toggle="dropdownDots-{{ $loop->index }}"
+                                                        class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                                                        type="button">
+                                                        <svg class="w-5 h-5" aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                                            viewBox="0 0 4 15">
+                                                            <path
+                                                                d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+                                                        </svg>
+                                                    </button>
+
+                                                    <!-- Dropdown menu -->
+                                                    <div id="dropdownDots-{{ $loop->index }}"
+                                                        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                                                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                                            aria-labelledby="dropdownMenuIconButton-{{ $loop->index }}">
+                                                            @canany(['secretary.read', 'panelist.read'])
+                                                                <li>
+                                                                    <a href="#" data-modal-target="edit-rsc-modal"
+                                                                        data-modal-toggle="edit-rsc-modal"
+                                                                        wire:click="editRsc({{ $rsc->id }})"
+                                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+                                                                </li>
+                                                            @endcan
+                                                            @can('secretary.read')
+                                                                <li>
+                                                                    <a href="#"
+                                                                        wire:confirm="You are about to delete RSC. Continue?"
+                                                                        wire:click="deleteRsc({{ $rsc->id }})"
+                                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
+                                                                </li>
+                                                            @endcan
+                                                            @can('student.read')
+                                                                <li>
+                                                                    <a href="#"
+                                                                        wire:click="editRsc({{ $rsc->id }})"
+                                                                        data-modal-target="student-view-rsc-modal"
+                                                                        data-modal-toggle="student-view-rsc-modal"
+                                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">View
+                                                                        details</a>
+                                                                </li>
+                                                            @endcan
+                                                        </ul>
+                                                    </div>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -333,7 +378,7 @@
         <!-- Upload RSC modal -->
         <div id="add-rsc-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
             class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div class="relative p-4 w-full max-w-4xl max-h-full">
+            <div class="relative p-4 w-full max-w-7xl max-h-full">
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
                     <!-- Modal header -->
@@ -341,7 +386,7 @@
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                             Upload RSC
                         </h3>
-                        <button type="button" wire:click="clear"
+                        <button type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                             data-modal-toggle="add-rsc-modal">
                             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -354,8 +399,8 @@
                     </div>
                     <!-- Modal body -->
                     <form class="p-4 md:p-5">
-                        <div class="grid gap-4 mb-4 grid-cols-2">
-                            <div class="col-span-2">
+                        <div class="grid gap-4 mb-6 grid-cols-2">
+                            <div>
 
                                 <label for="typeOfDefense"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type of
@@ -373,87 +418,74 @@
                                 <x-input-error :messages="$errors->get('typeOfDefense')" class="mt-2" />
                             </div>
 
-                            <div class="col-span-2">
-                                <label for="manuscriptChapter"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
-                                <input type="text" wire:model="manuscriptChapter" id="manuscriptChapter"
-                                    placeholder="e.g. 1-3"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <div>
 
-                                <x-input-error :messages="$errors->get('manuscriptChapter')" class="mt-2" />
+                                <label for="commentFor"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comment
+                                    for*</label>
+                                <select id="commentFor" wire:model="commentFor"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option value="">Select option</option>
+                                    @foreach (\App\Models\Rsc::TYPE as $typeKey => $type)
+                                        <option value="{{ $typeKey }}">{{ $type }}</option>
+                                    @endforeach
+                                </select>
+
+                                <x-input-error :messages="$errors->get('commentFor')" class="mt-2" />
                             </div>
 
-                            <div class="col-span-2">
-
-                                <label for="rscManuscript"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">RSC Manuscript*
-                                </label>
-                                <textarea id="rscManuscript" rows="4" wire:model="rscManuscriptContent"
-                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                </textarea>
-
-                                <x-input-error :messages="$errors->get('rscManuscriptContent')" class="mt-2" />
-                            </div>
-
-
-                            <div class="col-span-2">
-                                <label for="rscSoftwareProgramDfdNumber"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Module
-                                    number</label>
-                                <input type="text" wire:model="rscSoftwareProgramDfdNumber"
-                                    id="rscSoftwareProgramDfdNumber"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-
-                                <x-input-error :messages="$errors->get('rscSoftwareProgramDfdNumber')" class="mt-2" />
-                            </div>
-
-                            <div class="col-span-2">
-
-                                <label for="rscSoftwareProgram"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Software Program
-                                    RSC*
-                                </label>
-                                <textarea id="rscSoftwareProgram" rows="4" wire:model="rscSoftwareProgramContent"
-                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
-
-                                <x-input-error :messages="$errors->get('rscSoftwareProgramContent')" class="mt-2" />
-                            </div>
-
-                            <div class="col-span-2">
-
-                                <label for="generalComments"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">General
-                                    Comments/Suggestions
-                                </label>
-                                <textarea id="generalComments" rows="4" wire:model="generalComments"
-                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
-
-                                <x-input-error :messages="$errors->get('generalComments')" class="mt-2" />
-                            </div>
-
-                            <div class="col-span-2">
-                                <input id="redefense" type="checkbox" value="true" wire:model.live="reDefense"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label for="redefense"
-                                    class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Re-defense</label>
-                            </div>
-
-                            @if ($reDefense)
-                                <div class="col-span-2">
-                                    <label for="reDefenseOn"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Re-defense
-                                        On</label>
-                                    <input type="datetime-local" wire:model="reDefenseOn" id="reDefenseOn"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-
-                                    <x-input-error :messages="$errors->get('reDefenseOn')" class="mt-2" />
-                                </div>
-                            @endif
                         </div>
 
-                        <x-save-update-button methodName="uploadRsc" wire:loading.attr="disabled" class="mt-4">Upload
+                        <div class="grid gap-4 mb-4 grid-cols-3">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Page
+                                    No.</label>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
+                                    (RSC)*</label>
+                            </div>
+                            @foreach ($comments as $commentKey => $comment)
+                                <div>
+                                    <input type="text" id="comments.{{ $commentKey }}.chapter"
+                                        wire:model="comments.{{ $commentKey }}.chapter"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    @if ($commentKey > 0)
+                                        <button type="button" class="text-sm text-red-600"
+                                            wire:click="removeComment({{ $commentKey }})">remove</button>
+                                    @endif
+
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <input type="text" id="comments.{{ $commentKey }}.pageNumber"
+                                        wire:model="comments.{{ $commentKey }}.pageNumber"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <textarea id="comments.{{ $commentKey }}.comments" rows="3"
+                                        wire:model="comments.{{ $commentKey }}.comments"
+                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                                </div>
+                            @endforeach
+
+                        </div>
+
+                        <div class="mb-2">
+                            <button type="button" wire:click="addComment"
+                                class="px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">add
+                                new comment</button>
+                        </div>
+
+
+
+                        <x-save-update-button methodName="uploadRsc" wire:loading.attr="disabled" class="mt-6">Upload
                             RSC</x-save-update-button>
-                        {{-- <x-save-update-button methodName="saveDraft" wire:loading.attr="disabled" class="mt-4">Save as draft</x-save-update-button> --}}
                         <!-- Loading Indicator -->
                         <div wire:loading wire:target="uploadRsc,saveDraft">
                             Loading...please wait.
@@ -463,6 +495,247 @@
             </div>
         </div>
     @endcan
+
+    @can('student.read')
+        <!-- Student view RSC modal -->
+        <div id="student-view-rsc-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
+            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-7xl max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            View RSC details
+                        </h3>
+                        <button type="button"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            data-modal-toggle="student-view-rsc-modal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <form class="p-4 md:p-5">
+                        <div class="grid gap-4 mb-6 grid-cols-2">
+                            <div>
+
+                                <label for="typeOfDefense"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type of
+                                    Defense</label>
+                                <select id="typeOfDefense" wire:model="typeOfDefense" disabled
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option value="">Select option</option>
+                                    @foreach (\App\Models\Schedule::DEFENSE_STATUS as $typeOfDefenseKey => $typeOfDefense)
+                                        <option value="{{ $typeOfDefenseKey }}"
+                                            {{ $schedule->type_of_defense == $typeOfDefenseKey ? 'selected' : '' }}>
+                                            {{ $typeOfDefense }}</option>
+                                    @endforeach
+                                </select>
+
+                                <x-input-error :messages="$errors->get('typeOfDefense')" class="mt-2" />
+                            </div>
+
+                            <div>
+
+                                <label for="commentFor"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comment
+                                    for</label>
+                                <select id="commentFor" wire:model="commentFor" disabled
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option value="">Select option</option>
+                                    @foreach (\App\Models\Rsc::TYPE as $typeKey => $type)
+                                        <option value="{{ $typeKey }}">{{ $type }}</option>
+                                    @endforeach
+                                </select>
+
+                                <x-input-error :messages="$errors->get('commentFor')" class="mt-2" />
+                            </div>
+
+                        </div>
+
+                        <div class="grid gap-4 mb-4 grid-cols-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Page
+                                    No.</label>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
+                                    (RSC)</label>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Action
+                                    taken</label>
+                            </div>
+                            @foreach ($comments as $commentKey => $comment)
+                                <div>
+                                    <input type="text" id="comments.{{ $commentKey }}.chapter" disabled read-only
+                                        wire:model="comments.{{ $commentKey }}.chapter"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <input type="text" id="comments.{{ $commentKey }}.pageNumber" disabled read-only
+                                        wire:model="comments.{{ $commentKey }}.pageNumber"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <textarea id="comments.{{ $commentKey }}.comments" rows="3" disabled read-only
+                                        wire:model="comments.{{ $commentKey }}.comments"
+                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <textarea id="comments.{{ $commentKey }}.action_taken" rows="3"
+                                        wire:model="comments.{{ $commentKey }}.action_taken"
+                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.action_taken')" class="mt-2" />
+                                </div>
+                            @endforeach
+
+                        </div>
+
+                        <x-save-update-button methodName="studentUpdateActionTaken" wire:loading.attr="disabled"
+                            class="mt-6">Save changes</x-save-update-button>
+                        <!-- Loading Indicator -->
+                        <div wire:loading wire:target="studentUpdateActionTaken,editRsc">
+                            Loading...please wait.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endcan
+
+    <!-- Update RSC modal -->
+    <div id="edit-rsc-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-7xl max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Edit RSC
+                    </h3>
+                    <button type="button" wire:click="clear"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        data-modal-toggle="edit-rsc-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <form class="p-4 md:p-5">
+                    <div class="grid gap-4 mb-6 grid-cols-2">
+                        <div>
+
+                            <label for="typeOfDefense"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type of
+                                Defense*</label>
+                            <select id="typeOfDefense" wire:model="typeOfDefense"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="">Select option</option>
+                                @foreach (\App\Models\Schedule::DEFENSE_STATUS as $typeOfDefenseKey => $typeOfDefense)
+                                    <option value="{{ $typeOfDefenseKey }}"
+                                        {{ $schedule->type_of_defense == $typeOfDefenseKey ? 'selected' : '' }}>
+                                        {{ $typeOfDefense }}</option>
+                                @endforeach
+                            </select>
+
+                            <x-input-error :messages="$errors->get('typeOfDefense')" class="mt-2" />
+                        </div>
+
+                        <div>
+
+                            <label for="commentFor"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comment
+                                for*</label>
+                            <select id="commentFor" wire:model="commentFor"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="">Select option</option>
+                                @foreach (\App\Models\Rsc::TYPE as $typeKey => $type)
+                                    <option value="{{ $typeKey }}">{{ $type }}</option>
+                                @endforeach
+                            </select>
+
+                            <x-input-error :messages="$errors->get('commentFor')" class="mt-2" />
+                        </div>
+
+                    </div>
+
+                    <div class="grid gap-4 mb-4 grid-cols-3">
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Page
+                                No.</label>
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
+                                (RSC)*</label>
+                        </div>
+                        @foreach ($comments as $commentKey => $comment)
+                            <div>
+                                <input type="text" id="comments.{{ $commentKey }}.chapter"
+                                    wire:model="comments.{{ $commentKey }}.chapter"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                @if ($commentKey > 0)
+                                    <button type="button" class="text-sm text-red-600"
+                                        wire:confirm="Delete comment?"
+                                        wire:click="removeComment({{ $commentKey }})">remove</button>
+                                @endif
+
+                                <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />
+                            </div>
+                            <div>
+                                <input type="text" id="comments.{{ $commentKey }}.pageNumber"
+                                    wire:model="comments.{{ $commentKey }}.pageNumber"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                            </div>
+                            <div>
+                                <textarea id="comments.{{ $commentKey }}.comments" rows="3"
+                                    wire:model="comments.{{ $commentKey }}.comments"
+                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                            </div>
+                        @endforeach
+
+                    </div>
+
+                    <div class="mb-2">
+                        <button type="button" wire:click="addComment"
+                            class="px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">add
+                            new comment</button>
+                    </div>
+
+
+
+                    <x-save-update-button methodName="updateRsc" wire:loading.attr="disabled" class="mt-6">Upload
+                        RSC</x-save-update-button>
+                    <!-- Loading Indicator -->
+                    <div wire:loading wire:target="updateRsc,editRsc">
+                        Loading...please wait.
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     @can('admin.create')
         {{-- Admin can upload only RSC file --}}
