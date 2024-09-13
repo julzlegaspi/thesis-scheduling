@@ -1,4 +1,4 @@
-Name,Email,Role,Course,Section
-John Doe,john@example.com,student,BSIT,4A
-Sarah Johnson,sarah.johnson@example.com,student,BSIT,4A
-Michael Brown,michael.brown@example.com,student,BSIT,4A
+Name,Email
+John Doe,john@example.com
+Sarah Johnson,sarah.johnson@example.com
+Michael Brown,michael.brown@example.com

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DownloadTempUser;
 use App\Livewire\User;
 use App\Livewire\Venue;
 use App\Livewire\Course;
@@ -72,6 +73,9 @@ Route::middleware(['auth', 'verified', 'ensure_student_has_course_and_section'])
     //View file
     Route::post('/view-manuscript-file/{manuscript}', ViewManuscriptFileController::class)->name('manuscript.show');
     Route::post('/view-rsc-file/{rsc}', ViewRscFileController::class)->name('rsc.show');
+
+    //Download temp users
+    Route::get('/download-temp-users', DownloadTempUser::class)->name('download.temp.users');
 });
 
 Route::get('/complete-profile', CompleteProfile::class)->name('complete.profile.index');

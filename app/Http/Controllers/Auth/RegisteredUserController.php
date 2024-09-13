@@ -29,6 +29,51 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $tempUserExist = false;
+        if (file_exists(storage_path('app/uploads/temp-users.csv')))
+        {
+            $tempUserExist = true;
+            $tempUsersArray = [];
+
+            $fullPath = storage_path('app/uploads/temp-users.csv');
+                    // Open the file for reading
+            if (($handle = fopen($fullPath, 'r')) !== false) {
+                // Get the headers from the first row
+                $headers = fgetcsv($handle);
+
+                // Initialize an array to hold the data
+                $data = [];
+
+                // Loop through the file and parse each row
+                while (($row = fgetcsv($handle)) !== false) {
+                    $data[] = array_combine($headers, $row);
+                }
+
+                // Close the file
+                fclose($handle);
+
+                // Process the data
+                foreach ($data as $row) {
+                    // Your logic here
+                    array_push($tempUsersArray, $row['Email']);
+                }
+            }
+        }
+
+        if (!$tempUserExist)
+        {
+            return back()->withErrors([
+                'email' => 'Unable to register this email. Contact administrator.',
+            ])->onlyInput('email');
+        }
+
+        if (!in_array($request->email, $tempUsersArray))
+        {
+            return back()->withErrors([
+                'email' => 'Unable to register this email. Contact administrator.',
+            ])->onlyInput('email');
+        }
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'ends_with:my.cspc.edu.ph', 'unique:'.User::class],

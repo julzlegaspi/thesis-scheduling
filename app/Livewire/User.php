@@ -146,49 +146,53 @@ class User extends Component
             'csvFile' => 'required|mimes:csv,txt|max:2048', // 2MB Max
         ]);
 
-        $path = $this->csvFile->store('uploads');
+        $path = $this->csvFile->storeAs('uploads', 'temp-users.csv');
 
-        $file = Storage::get($path);
-
-        $rows = array_map('str_getcsv', explode("\n", $file));
-
-        $header = array_shift($rows);
-
-        
-        foreach ($rows as $row) {
-
-            
-            if (count($header) != count($row)) {
-                continue;
-            }
-
-            $data = array_combine($header, $row);
-            
-            $validator = Validator::make($data, [
-                'Name' => 'required|string|max:255',
-                'Email' => 'required|email|unique:users,email|ends_with:my.cspc.edu.ph',
-                'Role' => 'required|string',
-                'Course' => 'required',
-                'Section' => 'required'
-            ]);
-
-            if ($validator->fails()) {
-                continue;
-            }
-            
-            $user = UserModel::create([
-                'name' => $data['Name'],
-                'email' => $data['Email'],
-                'password' => bcrypt('password'),
-            ]);
-
-            $user->assignRole($data['Role']);
-
-        }
-
-        session()->flash('success', 'Users uploaded');
+        session()->flash('success', "Uploaded. Full path: storage/app/uploads/{$path}");
 
         $this->redirect(User::class);
+
+        // $file = Storage::get($path);
+
+        // $rows = array_map('str_getcsv', explode("\n", $file));
+
+        // $header = array_shift($rows);
+
+        
+        // foreach ($rows as $row) {
+
+            
+        //     if (count($header) != count($row)) {
+        //         continue;
+        //     }
+
+        //     $data = array_combine($header, $row);
+            
+        //     $validator = Validator::make($data, [
+        //         'Name' => 'required|string|max:255',
+        //         'Email' => 'required|email|unique:users,email|ends_with:my.cspc.edu.ph',
+        //         'Role' => 'required|string',
+        //         'Course' => 'required',
+        //         'Section' => 'required'
+        //     ]);
+
+        //     if ($validator->fails()) {
+        //         continue;
+        //     }
+            
+        //     $user = UserModel::create([
+        //         'name' => $data['Name'],
+        //         'email' => $data['Email'],
+        //         'password' => bcrypt('password'),
+        //     ]);
+
+        //     $user->assignRole($data['Role']);
+
+        // }
+
+        // session()->flash('success', 'Users uploaded');
+
+        // $this->redirect(User::class);
     }
 
     public function getSections()

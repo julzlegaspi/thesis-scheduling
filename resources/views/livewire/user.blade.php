@@ -7,9 +7,21 @@
         </div>
         <div class="items-center sm:flex">
             <div class="flex items-center">
-                <x-primary-button data-modal-target="import-user-modal" data-modal-toggle="import-user-modal">
-                    Import from CSV
+                <x-primary-button data-popover-target="popover-bottom" data-popover-placement="bottom"
+                    data-modal-target="import-user-modal" data-modal-toggle="import-user-modal">
+                    Upload from CSV
                 </x-primary-button>
+                <div data-popover id="popover-bottom" role="tooltip"
+                    class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
+                    <div
+                        class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
+                        <h3 class="font-semibold text-gray-900 dark:text-white">Information</h3>
+                    </div>
+                    <div class="px-3 py-2">
+                        <p>Only users specified in the CSV are allowed to register for this system.</p>
+                    </div>
+                    <div data-popper-arrow></div>
+                </div>
                 <x-primary-button data-modal-target="add-modal" data-modal-toggle="add-modal">
                     Add new user
                 </x-primary-button>
@@ -631,7 +643,7 @@
                     <!-- Modal header -->
                     <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                            Import users from a CSV
+                            Upload users from a CSV
                         </h3>
                         <button type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -645,13 +657,13 @@
                         </button>
                     </div>
                     <!-- Modal body -->
-                    <form class="p-4 md:p-5">
+                    <div class="p-4 md:p-5">
                         <div class="grid gap-4 mb-4 grid-cols-2">
 
                             <div class="col-span-2">
 
                                 <label for="csvFile"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Import CSV
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Upload CSV
                                     file</label>
                                 <input wire:model="csvFile"
                                     class="mb-2 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
@@ -660,13 +672,21 @@
                                     <a href="{{ asset('/users-template.csv') }}"
                                         class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Download
                                         template</a>
+                                    @if (file_exists(storage_path('app/uploads/temp-users.csv')))
+                                        or
+                                        <a href="{{ route('download.temp.users') }}"
+                                            class="m-0 p-0 font-medium text-blue-600 dark:text-blue-500 hover:underline">View
+                                            allowed users</a>
+                                    @endif
                                 </p>
 
 
-                                <x-save-update-button methodName="uploadCsv"
-                                    wire:loading.attr="disabled">Import</x-save-update-button>
+                                <x-save-update-button methodName="uploadCsv" wire:loading.attr="disabled">Upload
+                                    CSV</x-save-update-button>
                                 <x-input-error :messages="$errors->get('csvFile')" />
-
+                                @if (file_exists(storage_path('app/uploads/temp-users.csv')))
+                                    <p class="text-xs">*re-uploading will overwrite the existing.</p>
+                                @endif
                                 <div wire:loading wire:target="uploadCsv">
                                     Loading...
                                 </div>
@@ -674,7 +694,7 @@
                             </div>
 
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
