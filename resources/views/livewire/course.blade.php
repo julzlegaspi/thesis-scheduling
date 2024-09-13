@@ -3,12 +3,12 @@
     <div class="items-center justify-between lg:flex">
         <div class="mb-4 lg:mb-0">
             <h1 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">Courses</h1>
-            <span class="text-base font-normal text-gray-500 dark:text-gray-400">Manage courses</span>
+            <span class="text-base font-normal text-gray-500 dark:text-gray-400">Manage programs</span>
         </div>
         <div class="items-center sm:flex">
             <div class="flex items-center">
                 <x-primary-button data-modal-target="add-modal" data-modal-toggle="add-modal">
-                    Add new course
+                    Add new program
                 </x-primary-button>
             </div>
         </div>
@@ -103,13 +103,13 @@
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
                             <input type="text" wire:model="name" id="name"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="Type course name">
+                                placeholder="Type program name">
 
                             <x-input-error :messages="$errors->get('name')" class="mt-2" />
                         </div>
 
                     </div>
-                    <x-save-update-button methodName="store">Add new course</x-save-update-button>
+                    <x-save-update-button methodName="store">Add new program</x-save-update-button>
                     <div wire:loading wire:target="store">
                         Loading...please wait.
                     </div>
