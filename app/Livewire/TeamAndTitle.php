@@ -191,7 +191,7 @@ class TeamAndTitle extends Component
                 ->with('course', 'section')
                 ->get()
                 ->groupBy(function ($item) {
-                    return $item->course->name;
+                    return $item->course?->name;
                 });
         }
 
@@ -203,7 +203,7 @@ class TeamAndTitle extends Component
                 ->with('course', 'section')
                 ->get()
                 ->groupBy(function ($item) {
-                    return $item->course->name;
+                    return $item->course?->name;
                 });
 
             // Get all teams created by the current user
