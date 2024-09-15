@@ -78,6 +78,7 @@ class User extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->course = $user->course_id;
+        $this->section = $user->section_id;
         $this->getSections();
         $this->role = $user->roles->pluck('name')[0];
         $this->isPanelChair = ($user->is_panel_chair) ? true : false;
