@@ -4,33 +4,38 @@ namespace App\Livewire;
 
 use App\Models\User;
 use App\Models\Course;
-use App\Models\Section;
 use Livewire\Component;
 
 class CompleteProfile extends Component
 {
-    public $course = '';
-    public $section = '';
+    public $courseAndSection = '';
 
     public function mount()
     {
-        $this->course = auth()->user()->course_id;
-        $this->section = auth()->user()->section_id;
+        $courseId = auth()->user()->course_id;
+        $sectionId = auth()->user()->section_id;
+        if ($courseId != null || $sectionId != null)
+        {
+            $this->courseAndSection = "{$courseId},{$sectionId}";
+        } else {
+            $this->courseAndSection = '';
+        }
     }
 
     protected $rules = [
-        'course' => 'required',
-        'section' => 'required'
+        'courseAndSection' => 'required',
     ];
 
     public function store()
     {
         $this->validate();
+
+        $exploded = explode(',', $this->courseAndSection);
         
         $user = User::find(auth()->user()->id);
 
-        $user->course_id = $this->course;
-        $user->section_id = $this->section;
+        $user->course_id = $exploded[0];
+        $user->section_id = $exploded[1];
         $user->save();
 
         session()->flash('success', 'Profile completed');
@@ -40,11 +45,11 @@ class CompleteProfile extends Component
 
     public function render()
     {
-        $courses = Course::orderBy('name', 'asc')->get();
-        $sections = Section::orderBy('name', 'asc')->get();
+        $courses = Course::orderBy('name', 'asc')
+            ->with('sections')
+            ->get();
         return view('livewire.complete-profile', [
             'courses' => $courses,
-            'sections' => $sections,
         ]);
     }
 }
