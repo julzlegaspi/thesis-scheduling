@@ -18,7 +18,7 @@
                         </a>
 
                     </li>
-                    @can('panelist.read')
+                    @canany(['panelist.read', 'admin.read'])
                         <li>
                             <a href="{{ route('approvals.index') }}"
                                 class="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100 {{ request()->segment(1) == 'approvals' ? 'bg-gray-100 dark:bg-gray-700' : '' }} group dark:text-gray-200 dark:hover:bg-gray-700">
@@ -34,7 +34,7 @@
                                 <span class="ml-3" sidebar-toggle-item>Approvals</span>
                             </a>
                         </li>
-                    @endcan
+                    @endcanany
 
                     <li>
                         <a href="{{ route('schedules.index') }}"

@@ -19,6 +19,7 @@ class Schedule extends Model
     public const DECLINED = 3;
     public const RE_DEFENSE = 4;
     public const THESIS_DEFENDED = 5;
+    public const RE_SCHEDULE = 6;
 
     public const TD = 0;
     public const POD = 1;
@@ -32,6 +33,7 @@ class Schedule extends Model
         3 => 'Declined',
         4 => 'Re-Defense',
         5 => 'Thesis Defended',
+        6 => 'Re-Schedule'
     ];
 
     public const DEFENSE_STATUS = [

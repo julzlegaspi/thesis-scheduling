@@ -53,4 +53,29 @@ class ScheduleService
 
         return $overlappingConflict;
     }
+
+    public function checkScheduleConflictForStudent()
+    {
+        $panelists = $this->panelists;
+        $end = Carbon::parse($this->start)->addHours(2);
+        // Convert start and end to Carbon instances
+        $start = Carbon::parse($this->start);
+        $end = Carbon::parse($end);
+
+        // Check for overlapping conflicts
+        $overlappingConflict = Schedule::where(function ($query) use ($start, $end) {
+                $query->whereBetween('start', [$start, $end])
+                    ->orWhereBetween('end', [$start, $end])
+                    ->orWhere(function ($q) use ($start, $end) {
+                        $q->where('start', '<=', $start)
+                            ->where('end', '>=', $end);
+                    });
+            })
+            ->whereHas('team.panelists', function ($query) use ($panelists) {
+                $query->whereIn('users.id', $panelists);
+            })
+            ->first();
+
+        return $overlappingConflict;
+    }
 }

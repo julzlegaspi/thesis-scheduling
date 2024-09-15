@@ -57,7 +57,7 @@ Route::middleware(['auth', 'verified', 'ensure_student_has_course_and_section'])
     Route::get('/venues', Venue::class)->name('venues.index');
     Route::get('/archives', Archive::class)->name('archives.index');
     //Panelist
-    Route::get('/approvals', Approval::class)->middleware('role:panelist')->name('approvals.index');
+    Route::get('/approvals', Approval::class)->middleware('role:admin|panelist')->name('approvals.index');
 
     //Secretary
 

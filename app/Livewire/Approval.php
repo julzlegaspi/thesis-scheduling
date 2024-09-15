@@ -7,6 +7,7 @@ use App\Models\User;
 use Livewire\Component;
 use App\Models\Schedule;
 use Livewire\WithPagination;
+use App\Mail\ScheduleCreated;
 use App\Mail\ScheduleApproved;
 use App\Models\ApprovalStatus;
 use Illuminate\Support\Facades\Mail;
@@ -149,6 +150,37 @@ class Approval extends Component
         }
     }
 
+    public function adminApprove()
+    {
+        $schedule = Schedule::where('id', $this->scheduleId)->first();
+        $schedule->status = Schedule::FOR_PANELIST_APPROVAL;
+        $schedule->save();
+
+        //Notify all the panelist
+        if(count($schedule->team->panelists) > 0)
+        {
+            foreach ($schedule->team->panelists as $panelist) {
+                Mail::to($panelist->email)->queue(new ScheduleCreated($panelist, $schedule));
+            }
+        }
+
+        session()->flash('success', 'Schedule has been approved and forwared to all panelist for approval.');
+
+        $this->redirect(Approval::class);
+    }
+
+    public function adminDecline()
+    {
+        $schedule = Schedule::where('id', $this->scheduleId)->first();
+        $schedule->status = Schedule::DECLINED;
+        $schedule->custom_status = null;
+        $schedule->save();
+
+        session()->flash('success', 'Schedule has been declined.');
+
+        $this->redirect(Approval::class);
+    }
+
     public function clear()
     {
         $this->resetValidation();
@@ -168,13 +200,18 @@ class Approval extends Component
     {
         $userId = auth()->user()->id;
 
-        $pendingSchedules = Schedule::where('status', Schedule::FOR_PANELIST_APPROVAL)
-            ->whereHas('team.approvalStatus', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-                $query->where('status', Schedule::FOR_PANELIST_APPROVAL);
-            })
-            ->paginate(10);
-    
+        if (auth()->user()->roles->pluck('name')[0] == 'admin')
+        {
+            $pendingSchedules = Schedule::where('status', Schedule::PENDING)->paginate(10);
+        } else {
+            $pendingSchedules = Schedule::where('status', Schedule::FOR_PANELIST_APPROVAL)
+                ->whereHas('team.approvalStatus', function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                    $query->where('status', Schedule::FOR_PANELIST_APPROVAL);
+                })
+                ->paginate(10);
+        }
+
 
         return view('livewire.approval', [
             'pendingSchedules' => $pendingSchedules,

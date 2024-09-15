@@ -4,14 +4,17 @@ namespace App\Livewire;
 
 use Carbon\Carbon;
 use App\Models\Team;
+use App\Models\User;
 use App\Models\Venue;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Mail\ScheduleCreated;
+use App\Models\ApprovalStatus;
+use App\Services\ScheduleService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Schedule as ScheduleModel;
-use App\Services\ScheduleService;
+use App\Mail\ReDefenseOrReScheduleCreated;
 
 class Schedule extends Component
 {
@@ -27,6 +30,8 @@ class Schedule extends Component
     public $start;
     public $type;
 
+    public $scheduleType = '';
+
     protected $rules = [
         'team' => 'required',
         'venue' => 'required',
@@ -38,7 +43,8 @@ class Schedule extends Component
     { 
         $this->validate();
        
-        $isConflict = (new ScheduleService($this->team, $this->start, $this->panelistIds))->checkScheduleConflict();
+        $isConflict = (new ScheduleService($this->team, $this->start, $this->panelistIds))
+            ->checkScheduleConflict();
         
         if ($isConflict)
         {
@@ -160,6 +166,42 @@ class Schedule extends Component
         } else {
             $this->clear();
         }
+    }
+
+    public function reScheduleOrReDefense()
+    {
+        $this->validate([
+            'scheduleType' => 'required'
+        ]);
+
+        $isConflict = (new ScheduleService($this->team, $this->start, $this->panelistIds))
+            ->checkScheduleConflictForStudent();
+        
+        if ($isConflict)
+        {
+            return $this->addError('team', "Unable to set the schedule due to a scheduling conflict with the team name '{$isConflict->team->name}'.");
+        }
+
+        $schedule = ScheduleModel::find($this->id);
+        $schedule->custom_status = $this->scheduleType;
+        $schedule->start = $this->start;
+        $schedule->end = Carbon::parse($this->start)->addHours(2);
+        $schedule->status = ScheduleModel::PENDING;
+        $schedule->type_of_defense = $this->type;
+        $schedule->save();
+
+        ApprovalStatus::where('team_id', $schedule->team_id)->update(['status' => $schedule::FOR_PANELIST_APPROVAL]);
+
+        //Email Admin
+        $adminUsers = User::role('admin')->get();
+        foreach ($adminUsers as $adminUser) {
+            Mail::to($adminUser->email)->queue(new ReDefenseOrReScheduleCreated($schedule));
+        }
+
+        session()->flash('success', 'Submitted for approval');
+
+        $this->redirect(Schedule::class);
+
     }
 
     public function render()

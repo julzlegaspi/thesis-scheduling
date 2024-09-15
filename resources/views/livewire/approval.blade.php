@@ -43,6 +43,10 @@
                                 </th>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
+                                    Status
+                                </th>
+                                <th scope="col"
+                                    class="p-4 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-white">
                                     Type
                                 </th>
                                 <th scope="col"
@@ -103,9 +107,18 @@
                                     </td>
                                     <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                        {{ $schedule::DEFENSE_STATUS[$schedule->type_of_defense] }}
+                                        @if (!is_null($schedule->custom_status))
+                                            <x-status
+                                                statusCode="{{ $schedule->custom_status }}">{{ $schedule::STATUS[$schedule->custom_status] }}</x-status>
+                                        @endif
+                                        <x-status
+                                            statusCode="{{ $schedule->status }}">{{ $schedule::STATUS[$schedule->status] }}</x-status>
                                     </td>
                                     <td
+                                        class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                        {{ $schedule::DEFENSE_STATUS[$schedule->type_of_defense] }}
+                                    </td>
+                                    {{-- <td
                                         class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
 
                                         @if ($schedule->user_id == auth()->user()->id)
@@ -140,7 +153,7 @@
                                                 </ul>
                                             </div>
                                         @endif
-                                    </td>
+                                    </td> --}}
                                 </tr>
                             @empty
                                 <tr>
@@ -222,17 +235,33 @@
                 </div>
                 <!-- Modal footer -->
                 <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                    <x-save-update-button methodName="approve" wire:confirm="You are about to approve a defense schedule. Continue?">Approve</x-save-update-button>
-                    <x-save-update-button methodName="decline" wire:confirm="You are about to decline a defense schedule. Continue?" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Decline</x-save-update-button>
-                    <div wire:loading wire:target="approve">
-                        Loading...please wait.
-                    </div>
-                    <div wire:loading wire:target="decline">
-                        Loading...please wait.
-                    </div>
-                    {{-- <button data-modal-hide="approval-modal" type="button"
-                        class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
-                        --}}
+                    @can('panelist.read')
+                        <x-save-update-button methodName="approve"
+                            wire:confirm="You are about to approve a defense schedule. Continue?">Approve</x-save-update-button>
+                        <x-save-update-button methodName="decline"
+                            wire:confirm="You are about to decline a defense schedule. Continue?"
+                            class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Decline</x-save-update-button>
+                        <div wire:loading wire:target="approve">
+                            Loading...please wait.
+                        </div>
+                        <div wire:loading wire:target="decline">
+                            Loading...please wait.
+                        </div>
+                    @endcan
+
+                    @can('admin.read')
+                        <x-save-update-button methodName="adminApprove"
+                            wire:confirm="You are about to approve a defense schedule. Continue?">Approve</x-save-update-button>
+                        <x-save-update-button methodName="adminDecline"
+                            wire:confirm="You are about to decline a defense schedule. Continue?"
+                            class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Decline</x-save-update-button>
+                        <div wire:loading wire:target="adminApprove">
+                            Loading...please wait.
+                        </div>
+                        <div wire:loading wire:target="adminDecline">
+                            Loading...please wait.
+                        </div>
+                    @endcan
                 </div>
             </div>
         </div>
