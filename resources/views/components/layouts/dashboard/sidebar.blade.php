@@ -138,7 +138,7 @@
                                 class="space-y-2 py-2 {{ !in_array(request()->segment(1), ['courses', 'sections', 'users', 'course']) ? 'hidden' : '' }}">
                                 <li>
                                     <a href="{{ route('courses.index') }}"
-                                        class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 {{ in_array(request()->segment(1), ['courses', 'course']) ? 'bg-gray-100 dark:bg-gray-700' : '' }} transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Courses</a>
+                                        class="text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 {{ in_array(request()->segment(1), ['courses', 'course']) ? 'bg-gray-100 dark:bg-gray-700' : '' }} transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700">Programs</a>
                                 </li>
                                 {{-- <li>
                                     <a href="{{ route('sections.index') }}"
