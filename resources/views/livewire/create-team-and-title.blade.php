@@ -39,7 +39,7 @@
 
             <div class="col-span-2" wire:ignore>
                 <label for="courseAndSection"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Course - Year &
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Program - Year &
                     Section</label>
                 <select wire:model="courseAndSection" wire:change="getMembers" style="width: 100%;height:50px;"
                     id="courseAndSection">
