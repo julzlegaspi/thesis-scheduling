@@ -165,7 +165,7 @@
         </div>
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="styled-rsc" role="tabpanel"
             aria-labelledby="rsc-tab">
-            @can('secretary.create')
+            @can('panelist.create')
                 <x-primary-button data-modal-target="add-rsc-modal" data-modal-toggle="add-rsc-modal">
                     Upload RSC
                 </x-primary-button>
@@ -256,7 +256,7 @@
                                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
                                                                 </li>
                                                             @endcan
-                                                            @can('secretary.read')
+                                                            @can('panelist.read')
                                                                 <li>
                                                                     <a href="#"
                                                                         wire:confirm="You are about to delete RSC. Continue?"
@@ -374,7 +374,7 @@
         </div>
     </div>
 
-    @can('secretary.create')
+    @can('panelist.create')
         <!-- Upload RSC modal -->
         <div id="add-rsc-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
             class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
