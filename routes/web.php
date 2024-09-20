@@ -21,6 +21,7 @@ use App\Http\Controllers\ViewRscFileController;
 use App\Http\Controllers\FacebookLoginController;
 use App\Http\Controllers\ViewManuscriptFileController;
 use App\Livewire\EditTeamAndTitle;
+use App\Livewire\OnQueue;
 
 Route::get('/', function () {
     return view('welcome');
@@ -79,5 +80,7 @@ Route::middleware(['auth', 'verified', 'ensure_student_has_course_and_section'])
 });
 
 Route::get('/complete-profile', CompleteProfile::class)->name('complete.profile.index');
+
+Route::get('/queue', OnQueue::class)->name('queue.index');
 
 require __DIR__.'/auth.php';

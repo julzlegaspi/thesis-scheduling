@@ -45,7 +45,7 @@ class User extends Component
 
     protected $rules = [
         'name' => 'required|string',
-        'email' => 'required|email|unique:users,email|ends_with:my.cspc.edu.ph',
+        'email' => 'required|email|unique:users,email|ends_with:my.cspc.edu.ph,cspc.edu.ph',
         'password' => 'required|confirmed|string',
         'course' => 'required_if:role,student|required_with:section',
         'section' => 'required_if:role,student|required_with:course',
