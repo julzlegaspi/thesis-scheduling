@@ -32,6 +32,15 @@ class Schedule extends Component
 
     public $scheduleType = '';
 
+    public $teams;
+
+    public function mount()
+    {
+        $this->teams = Team::orderBy('name', 'asc')->with('schedule')->get();
+
+        // dd($this->teams);
+    }
+
     protected $rules = [
         'team' => 'required',
         'venue' => 'required',
@@ -116,6 +125,17 @@ class Schedule extends Component
     {
         if ($status === 'thesis-defended')
         {
+            if ($schedule->type_of_defense === $schedule::POD)
+            {
+                $schedule->type_of_defense = $schedule::FOD;
+            }
+
+            if ($schedule->type_of_defense === $schedule::TD)
+            {
+                $schedule->type_of_defense = $schedule::POD;
+            }
+
+
             $schedule->status = ScheduleModel::THESIS_DEFENDED;
             $schedule->save();
         } 
@@ -129,6 +149,17 @@ class Schedule extends Component
         session()->flash('success', 'Status update.');
 
         $this->redirect(Schedule::class);
+    }
+
+    public function getTeamsByType()
+    {
+        $teams = Team::whereHas('schedule', function($q) {
+            $q->whereHas('team', function($q) {
+                $q->where('type_of_defense', $this->type);
+            });
+        })->get();
+
+        $this->teams = $teams;
     }
 
     public function clear()
@@ -220,11 +251,9 @@ class Schedule extends Component
                 ->paginate();
         }
 
-        $teams = Team::orderBy('name', 'asc')->with('schedule')->get();
         $venues = Venue::orderBy('name', 'asc')->get();
         return view('livewire.schedule', [
             'schedules' => $schedules,
-            'teams' => $teams,
             'venues' => $venues,
         ]);
     }

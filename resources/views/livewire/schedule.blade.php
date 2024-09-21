@@ -153,11 +153,11 @@
                                                             data-modal-toggle="edit-modal"
                                                             class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
                                                     </li>
-                                                    <li>
+                                                    {{-- <li>
                                                         <a href="#" wire:click="destroy('{{ $schedule->id }}')"
                                                             wire:confirm="You are about to delete scheduled defense. Continue?"
                                                             class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
-                                                    </li>
+                                                    </li> --}}
                                                     <li class="border-t border-gray-200">
                                                         <a href="#"
                                                             wire:click="updateScheduleStatus('{{ $schedule->id }}', 'thesis-defended')"
@@ -248,6 +248,22 @@
                     <div class="grid gap-4 mb-4 grid-cols-2">
 
                         <div class="col-span-2">
+                            <label for="type"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+
+                            <select id="type" wire:model.live="type" wire:change="getTeamsByType"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="">Select option</option>
+                                @foreach (\App\Models\Schedule::DEFENSE_STATUS as $key => $type)
+                                    <option value="{{ $key }}">{{ $type }}</option>
+                                @endforeach
+                            </select>
+
+                            <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                        </div>
+
+                        
+                        <div class="col-span-2">
                             <label for="team"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select
                                 Team</label>
@@ -264,7 +280,6 @@
 
                             <x-input-error :messages="$errors->get('team')" class="mt-2" />
                         </div>
-
                         @if ($team !== '')
                             <div class="col-span-2">
                                 <label for="team"
@@ -312,20 +327,6 @@
                                 <x-input-error :messages="$errors->get('start')" class="mt-2" />
                             </div>
 
-                            <div class="col-span-2">
-                                <label for="type"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
-
-                                <select id="type" wire:model.live="type"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option value="">Select option</option>
-                                    @foreach (\App\Models\Schedule::DEFENSE_STATUS as $key => $type)
-                                        <option value="{{ $key }}">{{ $type }}</option>
-                                    @endforeach
-                                </select>
-
-                                <x-input-error :messages="$errors->get('type')" class="mt-2" />
-                            </div>
                         @endif
 
                     </div>
