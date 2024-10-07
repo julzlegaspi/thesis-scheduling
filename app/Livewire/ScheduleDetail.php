@@ -35,6 +35,7 @@ class ScheduleDetail extends Component
         $schedule->load('team', 'venue', 'team.approvalStatus');
 
         $this->schedule = $schedule;
+        $this->typeOfDefense = $schedule->type_of_defense;
 
         array_push($this->comments, [
             'chapter' => '',
@@ -263,7 +264,7 @@ class ScheduleDetail extends Component
     public function clear()
     {
         $this->rscId = '';
-        $this->typeOfDefense = '';
+        $this->typeOfDefense = $this->schedule->type_of_defense;
         $this->commentFor = '';
         $this->comments = [];
         $this->addComment();

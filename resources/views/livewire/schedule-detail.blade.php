@@ -167,12 +167,12 @@
             aria-labelledby="rsc-tab">
             @can('panelist.create')
                 <x-primary-button data-modal-target="add-rsc-modal" data-modal-toggle="add-rsc-modal">
-                    Upload RSC
+                    Add RSC
                 </x-primary-button>
             @endcan
             @can('admin.create')
                 <x-primary-button data-modal-target="admin-add-rsc-modal" data-modal-toggle="admin-add-rsc-modal">
-                    Upload RSC
+                    Add RSC
                 </x-primary-button>
             @endcan
             <div class="flex flex-col">
@@ -384,7 +384,7 @@
                     <!-- Modal header -->
                     <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                            Upload RSC
+                            Add RSC
                         </h3>
                         <button type="button"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -409,8 +409,7 @@
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     <option value="">Select option</option>
                                     @foreach (\App\Models\Schedule::DEFENSE_STATUS as $typeOfDefenseKey => $typeOfDefense)
-                                        <option value="{{ $typeOfDefenseKey }}"
-                                            {{ $schedule->type_of_defense == $typeOfDefenseKey ? 'selected' : '' }}>
+                                        <option value="{{ $typeOfDefenseKey }}">
                                             {{ $typeOfDefense }}</option>
                                     @endforeach
                                 </select>
@@ -423,7 +422,7 @@
                                 <label for="commentFor"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comment
                                     for*</label>
-                                <select id="commentFor" wire:model="commentFor"
+                                <select id="commentFor" wire:model.live="commentFor"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     <option value="">Select option</option>
                                     @foreach (\App\Models\Rsc::TYPE as $typeKey => $type)
@@ -436,45 +435,80 @@
 
                         </div>
 
-                        <div class="grid gap-4 mb-4 grid-cols-3">
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Page
-                                    No.</label>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
-                                    (RSC)*</label>
-                            </div>
-                            @foreach ($comments as $commentKey => $comment)
+                        @if ($commentFor == \App\Models\Rsc::MANUSCRIPT)
+                            <div class="grid gap-4 mb-4 grid-cols-3">
                                 <div>
-                                    <input type="text" id="comments.{{ $commentKey }}.chapter"
-                                        wire:model="comments.{{ $commentKey }}.chapter"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                                    @if ($commentKey > 0)
-                                        <button type="button" class="text-sm text-red-600"
-                                            wire:click="removeComment({{ $commentKey }})">remove</button>
-                                    @endif
+                                    <label
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
+                                </div>
+                                <div>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Page
+                                        No.</label>
+                                </div>
+                                <div>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
+                                        (RSC)*</label>
+                                </div>
+                                @foreach ($comments as $commentKey => $comment)
+                                    <div>
+                                        <input type="text" id="comments.{{ $commentKey }}.chapter"
+                                            wire:model="comments.{{ $commentKey }}.chapter"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                        @if ($commentKey > 0)
+                                            <button type="button" class="text-sm text-red-600"
+                                                wire:click="removeComment({{ $commentKey }})">remove</button>
+                                        @endif
 
-                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />
-                                </div>
-                                <div>
-                                    <input type="text" id="comments.{{ $commentKey }}.pageNumber"
-                                        wire:model="comments.{{ $commentKey }}.pageNumber"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
-                                </div>
-                                <div>
-                                    <textarea id="comments.{{ $commentKey }}.comments" rows="3"
-                                        wire:model="comments.{{ $commentKey }}.comments"
-                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
-                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
-                                </div>
-                            @endforeach
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <input type="text" id="comments.{{ $commentKey }}.pageNumber"
+                                            wire:model="comments.{{ $commentKey }}.pageNumber"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <textarea id="comments.{{ $commentKey }}.comments" rows="3"
+                                            wire:model="comments.{{ $commentKey }}.comments"
+                                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                                    </div>
+                                @endforeach
 
-                        </div>
+                            </div>
+                        @endif
+
+                        @if ($commentFor == \App\Models\Rsc::SYSTEM)
+                            <div class="grid gap-4 mb-4 grid-cols-2">
+                                <div>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Module
+                                        No.</label>
+                                </div>
+                                <div>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
+                                        (RSC)*</label>
+                                </div>
+                                @foreach ($comments as $commentKey => $comment)
+                                    <div>
+                                        <input type="text" id="comments.{{ $commentKey }}.pageNumber"
+                                            wire:model="comments.{{ $commentKey }}.pageNumber"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                        @if ($commentKey > 0)
+                                            <button type="button" class="text-sm text-red-600"
+                                                wire:click="removeComment({{ $commentKey }})">remove</button>
+                                        @endif
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <textarea id="comments.{{ $commentKey }}.comments" rows="3"
+                                            wire:model="comments.{{ $commentKey }}.comments"
+                                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                                    </div>
+                                @endforeach
+
+                            </div>
+                        @endif
 
                         <div class="mb-2">
                             <button type="button" wire:click="addComment"
@@ -558,51 +592,84 @@
 
                         </div>
 
-                        <div class="grid gap-4 mb-4 grid-cols-4">
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Page
-                                    No.</label>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
-                                    (RSC)</label>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Action
-                                    taken</label>
-                            </div>
-                            @foreach ($comments as $commentKey => $comment)
+                        @if ($commentFor == \App\Models\Rsc::MANUSCRIPT)
+                            <div class="grid gap-4 mb-4 grid-cols-4">
                                 <div>
-                                    <input type="text" id="comments.{{ $commentKey }}.chapter" disabled read-only
-                                        wire:model="comments.{{ $commentKey }}.chapter"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    <label
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
+                                </div>
+                                <div>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Page
+                                        No.</label>
+                                </div>
+                                <div>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
+                                        (RSC)</label>
+                                </div>
+                                <div>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Action
+                                        taken</label>
+                                </div>
+                                @foreach ($comments as $commentKey => $comment)
+                                    <div>
+                                        <input type="text" id="comments.{{ $commentKey }}.chapter" disabled
+                                            read-only wire:model="comments.{{ $commentKey }}.chapter"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
 
-                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />
-                                </div>
-                                <div>
-                                    <input type="text" id="comments.{{ $commentKey }}.pageNumber" disabled read-only
-                                        wire:model="comments.{{ $commentKey }}.pageNumber"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
-                                </div>
-                                <div>
-                                    <textarea id="comments.{{ $commentKey }}.comments" rows="3" disabled read-only
-                                        wire:model="comments.{{ $commentKey }}.comments"
-                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
-                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
-                                </div>
-                                <div>
-                                    <textarea id="comments.{{ $commentKey }}.action_taken" rows="3"
-                                        wire:model="comments.{{ $commentKey }}.action_taken"
-                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
-                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.action_taken')" class="mt-2" />
-                                </div>
-                            @endforeach
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <input type="text" id="comments.{{ $commentKey }}.pageNumber" disabled
+                                            read-only wire:model="comments.{{ $commentKey }}.pageNumber"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <textarea id="comments.{{ $commentKey }}.comments" rows="3" disabled read-only
+                                            wire:model="comments.{{ $commentKey }}.comments"
+                                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <textarea id="comments.{{ $commentKey }}.action_taken" rows="3"
+                                            wire:model="comments.{{ $commentKey }}.action_taken"
+                                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.action_taken')" class="mt-2" />
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
 
-                        </div>
+                        @if ($commentFor == \App\Models\Rsc::SYSTEM)
+                            <div class="grid gap-4 mb-4 grid-cols-2">
+                                <div>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Module
+                                        No.</label>
+                                </div>
+                                <div>
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
+                                        (RSC)*</label>
+                                </div>
+                                @foreach ($comments as $commentKey => $comment)
+                                    <div>
+                                        <input type="text" id="comments.{{ $commentKey }}.pageNumber"
+                                            wire:model="comments.{{ $commentKey }}.pageNumber"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                        @if ($commentKey > 0)
+                                            <button type="button" class="text-sm text-red-600"
+                                                wire:click="removeComment({{ $commentKey }})">remove</button>
+                                        @endif
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <textarea id="comments.{{ $commentKey }}.comments" rows="3"
+                                            wire:model="comments.{{ $commentKey }}.comments"
+                                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                        <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
 
                         <x-save-update-button methodName="studentUpdateActionTaken" wire:loading.attr="disabled"
                             class="mt-6">Save changes</x-save-update-button>
@@ -677,46 +744,80 @@
 
                     </div>
 
-                    <div class="grid gap-4 mb-4 grid-cols-3">
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
-                        </div>
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Page
-                                No.</label>
-                        </div>
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
-                                (RSC)*</label>
-                        </div>
-                        @foreach ($comments as $commentKey => $comment)
-                            <div>
-                                <input type="text" id="comments.{{ $commentKey }}.chapter"
-                                    wire:model="comments.{{ $commentKey }}.chapter"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                                @if ($commentKey > 0)
-                                    <button type="button" class="text-sm text-red-600"
-                                        wire:confirm="Delete comment?"
-                                        wire:click="removeComment({{ $commentKey }})">remove</button>
-                                @endif
 
-                                <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />
+                    @if ($commentFor == \App\Models\Rsc::MANUSCRIPT)
+                        <div class="grid gap-4 mb-4 grid-cols-3">
+                            <div>
+                                <label
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chapter</label>
                             </div>
                             <div>
-                                <input type="text" id="comments.{{ $commentKey }}.pageNumber"
-                                    wire:model="comments.{{ $commentKey }}.pageNumber"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                                <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Page
+                                    No.</label>
                             </div>
                             <div>
-                                <textarea id="comments.{{ $commentKey }}.comments" rows="3"
-                                    wire:model="comments.{{ $commentKey }}.comments"
-                                    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
-                                <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
+                                    (RSC)*</label>
                             </div>
-                        @endforeach
+                            @foreach ($comments as $commentKey => $comment)
+                                <div>
+                                    <input type="text" id="comments.{{ $commentKey }}.chapter"
+                                        wire:model="comments.{{ $commentKey }}.chapter"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    @if ($commentKey > 0)
+                                        <button type="button" class="text-sm text-red-600"
+                                            wire:confirm="Delete comment?"
+                                            wire:click="removeComment({{ $commentKey }})">remove</button>
+                                    @endif
 
-                    </div>
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <input type="text" id="comments.{{ $commentKey }}.pageNumber"
+                                        wire:model="comments.{{ $commentKey }}.pageNumber"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <textarea id="comments.{{ $commentKey }}.comments" rows="3"
+                                        wire:model="comments.{{ $commentKey }}.comments"
+                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    @if ($commentFor == \App\Models\Rsc::SYSTEM)
+                        <div class="grid gap-4 mb-4 grid-cols-2">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Module
+                                    No.</label>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments
+                                    (RSC)*</label>
+                            </div>
+                            @foreach ($comments as $commentKey => $comment)
+                                <div>
+                                    <input type="text" id="comments.{{ $commentKey }}.pageNumber"
+                                        wire:model="comments.{{ $commentKey }}.pageNumber"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    @if ($commentKey > 0)
+                                        <button type="button" class="text-sm text-red-600"
+                                            wire:click="removeComment({{ $commentKey }})">remove</button>
+                                    @endif
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.pageNumber')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <textarea id="comments.{{ $commentKey }}.comments" rows="3"
+                                        wire:model="comments.{{ $commentKey }}.comments"
+                                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                    <x-input-error :messages="$errors->get('comments.' . $commentKey . '.comments')" class="mt-2" />
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
 
                     <div class="mb-2">
                         <button type="button" wire:click="addComment"
@@ -726,7 +827,7 @@
 
 
 
-                    <x-save-update-button methodName="updateRsc" wire:loading.attr="disabled" class="mt-6">Upload
+                    <x-save-update-button methodName="updateRsc" wire:loading.attr="disabled" class="mt-6">Update
                         RSC</x-save-update-button>
                     <!-- Loading Indicator -->
                     <div wire:loading wire:target="updateRsc,editRsc">
@@ -747,7 +848,7 @@
                     <!-- Modal header -->
                     <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                            Upload RSC
+                            Add RSC
                         </h3>
                         <button type="button" wire:click="clear"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
