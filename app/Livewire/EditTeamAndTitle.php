@@ -38,12 +38,34 @@ class EditTeamAndTitle extends Component
             array_push($this->members, $member->id);
         }
         
-        $memberUsers = User::role('student')->where('section_id', $this->courseAndSection)->get();
+        $memberUsers = User::role('student')
+            ->where('section_id', $this->courseAndSection)
+            ->whereNotExists(function($query) {
+                $query->select(DB::raw(1))
+                    ->from('member_team')
+                    ->whereColumn('member_team.user_id', 'users.id')
+                    ->where('member_team.team_id', '!=', $this->id);
+            })
+            ->get();
+
         foreach ($memberUsers as $member) {
-            array_push($this->courseAndSectionUsers, [
-                'id' => $member->id,
-                'name' => $member->name
-            ]);
+            $inMember = DB::table('member_team')
+                ->where('user_id', $member->id)
+                ->where('team_id', $this->id)
+                ->orWhere(function ($query) use($member) {
+                    $query->where('user_id', '!=', $member->id);
+                    $query->where('team_id', $this->id);
+                })
+                ->first();
+
+            if ($inMember)
+            {
+                array_push($this->courseAndSectionUsers, [
+                    'id' => $member->id,
+                    'name' => $member->name
+                ]);
+            }
+
         }
 
         $panelists = $team->panelists->sortByDesc('is_panel_chair');
