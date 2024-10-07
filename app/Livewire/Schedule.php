@@ -202,6 +202,7 @@ class Schedule extends Component
     public function reScheduleOrReDefense()
     {
         $this->validate([
+            'start' => 'required|after_or_equal:now',
             'scheduleType' => 'required'
         ]);
 
