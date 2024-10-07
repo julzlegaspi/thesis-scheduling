@@ -52,7 +52,7 @@ class Schedule extends Component
         $this->validate();
        
         $isConflict = (new ScheduleService($this->team, $this->start, $this->panelistIds))
-            ->checkScheduleConflict();
+            ->checkScheduleConflict($this->id);
         
         if ($isConflict)
         {

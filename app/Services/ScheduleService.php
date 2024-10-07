@@ -22,7 +22,7 @@ class ScheduleService
         $this->panelists = $panelists;
     }
 
-    public function checkScheduleConflict()
+    public function checkScheduleConflict($currentId = null)
     {
         $panelists = $this->panelists;
         $end = Carbon::parse($this->start)->addHours(2);
@@ -31,7 +31,11 @@ class ScheduleService
         $end = Carbon::parse($end);
 
         // Check for exact conflicts
-        $exactConflict = Schedule::where('team_id', $this->team_id)->first();
+        $exactConflict = Schedule::where('team_id', $this->team_id)
+            ->when($currentId, function ($query) use ($currentId) {
+                return $query->where('id', '!=', $currentId);
+            })
+            ->first();
 
         if ($exactConflict) {
             return $exactConflict;
@@ -48,6 +52,9 @@ class ScheduleService
             })
             ->whereHas('team.panelists', function ($query) use ($panelists) {
                 $query->whereIn('users.id', $panelists);
+            })
+            ->when($currentId, function ($query) use ($currentId) {
+                return $query->where('id', '!=', $currentId);
             })
             ->first();
 
