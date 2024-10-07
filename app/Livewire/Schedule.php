@@ -11,7 +11,6 @@ use Livewire\WithPagination;
 use App\Mail\ScheduleCreated;
 use App\Models\ApprovalStatus;
 use App\Services\ScheduleService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Schedule as ScheduleModel;
 use App\Mail\ReDefenseOrReScheduleCreated;

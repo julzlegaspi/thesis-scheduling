@@ -9,6 +9,7 @@ use App\Models\Schedule;
 use Livewire\WithPagination;
 use App\Mail\ScheduleCreated;
 use App\Mail\ScheduleApproved;
+use App\Mail\ScheduleDeclined;
 use App\Models\ApprovalStatus;
 use Illuminate\Support\Facades\Mail;
 
@@ -77,7 +78,7 @@ class Approval extends Component
             $schedule->status = Schedule::APPROVED;
             $schedule->save();
 
-            $this->notify();
+            $this->approvedNotification();
         }
 
         session()->flash('success', 'Schedule has been approved.');
@@ -99,12 +100,14 @@ class Approval extends Component
         $schedule->status = Schedule::DECLINED;
         $schedule->save();
 
+        $this->declinedNotification();
+
         session()->flash('success', 'Schedule has been declined.');
 
         $this->redirect(Approval::class);
     }
 
-    public function notify()
+    public function approvedNotification()
     {
         $schedule = Schedule::find($this->scheduleId);
         //Students
@@ -150,6 +153,55 @@ class Approval extends Component
         }
     }
 
+    public function declinedNotification()
+    {
+        $schedule = Schedule::find($this->scheduleId);
+        //Students
+        if (count($schedule->team->members) > 0)
+        {
+            foreach ($schedule->team->members as $member) {
+                Mail::to($member->email)->queue(new ScheduleDeclined($schedule));
+            }
+        }
+
+        //Panelist
+        if (count($schedule->team->panelists) > 0)
+        {
+            foreach ($schedule->team->panelists as $panelist) {
+                if (auth()->user()->id != $panelist->id)
+                {
+                    Mail::to($panelist->email)->queue(new ScheduleDeclined($schedule));
+                }
+            }
+        }
+
+        //Admin
+        $adminUsers = User::role('admin')->get();
+        foreach ($adminUsers as $adminUser) {
+            Mail::to($adminUser->email)->queue(new ScheduleDeclined($schedule));
+        }
+
+        //Secretary
+        $secretaryUsers = User::role('secretary')->get();
+        foreach ($secretaryUsers as $secretaryUser) {
+            Mail::to($secretaryUser->email)->queue(new ScheduleDeclined($schedule));
+        }
+
+        //Experts
+        if ($schedule->team->capa)
+        {
+            Mail::to($schedule->team->capa->email)->queue(new ScheduleDeclined($schedule));
+        }
+        if ($schedule->team->consultant)
+        {
+            Mail::to($schedule->team->consultant->email)->queue(new ScheduleDeclined($schedule));
+        }
+        if ($schedule->team->grammarian)
+        {
+            Mail::to($schedule->team->grammarian->email)->queue(new ScheduleDeclined($schedule));
+        }
+    }
+
     public function adminApprove()
     {
         $schedule = Schedule::where('id', $this->scheduleId)->first();
@@ -175,6 +227,8 @@ class Approval extends Component
         $schedule->status = Schedule::DECLINED;
         $schedule->custom_status = null;
         $schedule->save();
+
+        $this->declinedNotification();
 
         session()->flash('success', 'Schedule has been declined.');
 
@@ -202,12 +256,10 @@ class Approval extends Component
 
         if (auth()->user()->roles->pluck('name')[0] == 'admin')
         {
-            $pendingSchedules = Schedule::where('status', Schedule::PENDING)->paginate(10);
+            $pendingSchedules = Schedule::paginate(10);
         } else {
-            $pendingSchedules = Schedule::where('status', Schedule::FOR_PANELIST_APPROVAL)
-                ->whereHas('team.approvalStatus', function ($query) use ($userId) {
+            $pendingSchedules = Schedule::whereHas('team.approvalStatus', function ($query) use ($userId) {
                     $query->where('user_id', $userId);
-                    $query->where('status', Schedule::FOR_PANELIST_APPROVAL);
                 })
                 ->paginate(10);
         }

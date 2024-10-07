@@ -1,7 +1,7 @@
 <x-mail::message>
 # Hello there,
 
-A thesis defense schedule has been <strong>approved</strong>. Below are the details.
+A thesis defense schedule has been <strong>declined</strong>. Below are the details.
 
 <strong>Thesis Title:</strong> {{ $schedule->team?->thesis_title }} <br>
 <strong>Team Name:</strong> {{ $schedule->team?->name }} <br>
