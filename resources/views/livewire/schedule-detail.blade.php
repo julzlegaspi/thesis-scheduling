@@ -987,7 +987,7 @@
                                     </div>
                                 @endcanany
 
-                                <div class="mb-4 mt-4">
+                                <div class="mb-4 mt-4 max-h-96 overflow-y-auto">
                                     @forelse ($manuscriptComments as $comment)
                                         <div class="flex items-center mb-4">
                                             <img class="w-8 h-8 me-4 rounded-full"
@@ -1004,6 +1004,7 @@
                                                 {!! nl2br(e($comment['comment'])) !!}
                                             </p>
                                         </div>
+                                        <hr class="mb-4">
                                     @empty
                                         No comments
                                     @endforelse
