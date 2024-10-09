@@ -319,7 +319,7 @@ class ScheduleDetail extends Component
                 'id' => $comment->id,
                 'user' => $comment->user?->name ?? 'Deleted user',
                 'comment' => $comment->comment,
-                'created_at' => Carbon::parse($comment->created_at)->format('F j, Y @ h:i A')
+                'created_at' => Carbon::parse($comment->created_at)->diffForHumans()
             ];
         }
     }
