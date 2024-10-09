@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\CommentManuscript;
 use App\Models\CommentRsc;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -29,6 +30,12 @@ class ScheduleDetail extends Component
     public $isDetailsTabSelected = 'false';
     public $isRSCTabSelected = 'false';
     public $isManuscriptTabSelected = 'false';
+
+    public $manuscriptId;
+    public string $manuscriptPath = '';
+    public string $manuscriptComment = '';
+
+    public array $manuscriptComments = [];
 
     public function mount(Schedule $schedule)
     {
@@ -105,10 +112,10 @@ class ScheduleDetail extends Component
     public function uploadManuscript()
     {
         $this->validate([
-            'manuscript' => 'required|file|mimes:pdf,doc,docx'
+            'manuscript' => 'required|file|mimes:pdf'
         ]);
 
-        $file = $this->manuscript->store('manuscripts');
+        $file = $this->manuscript->store('manuscripts', 'public');
         Manuscript::create([
             'team_id' => $this->schedule->team->id,
             'user_id' => auth()->user()->id,
@@ -268,7 +275,53 @@ class ScheduleDetail extends Component
         $this->commentFor = '';
         $this->comments = [];
         $this->addComment();
+        $this->manuscriptId = '';
+        $this->manuscriptPath = '';
+        $this->manuscriptComment = '';
+        $this->manuscriptComments = [];
         $this->resetValidation();
+    }
+
+    public function getManuscriptFilename($id, $filename)
+    {
+        $this->clear();
+        
+        $this->manuscriptId = $id;
+        $this->manuscriptPath = $filename;
+        $this->getManuscriptComments($id);
+
+    }
+
+    public function storeManuscriptComment()
+    {
+        $this->validate([
+            'manuscriptComment' => 'required|string'
+        ]);
+
+        CommentManuscript::create([
+            'manuscript_id' => $this->manuscriptId,
+            'user_id' => auth()->user()->id,
+            'comment' => $this->manuscriptComment
+        ]);
+
+        $this->manuscriptComment = '';
+        $this->manuscriptComments = [];
+
+        $this->getManuscriptComments($this->manuscriptId);
+    }
+
+    public function getManuscriptComments($manuscriptId)
+    {
+        $manuscript = Manuscript::find($manuscriptId);
+
+        foreach ($manuscript->comments as $comment) {
+            $this->manuscriptComments[] = [
+                'id' => $comment->id,
+                'user' => $comment->user?->name ?? 'Deleted user',
+                'comment' => $comment->comment,
+                'created_at' => Carbon::parse($comment->created_at)->format('F j, Y @ h:i A')
+            ];
+        }
     }
 
     public function render()

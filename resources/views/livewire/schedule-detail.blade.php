@@ -298,7 +298,7 @@
         </div>
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="styled-manuscript" role="tabpanel"
             aria-labelledby="manuscript-tab">
-            @canany(['student.create', 'admin.create', 'panelist.create'])
+            @canany(['student.create'])
                 <x-primary-button data-modal-target="add-manuscript-modal" data-modal-toggle="add-manuscript-modal">
                     Upload manuscript
                 </x-primary-button>
@@ -336,7 +336,7 @@
                                                 class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
                                                 {{ $loop->index + 1 }}
                                             </td>
-                                            <td
+                                            {{-- <td
                                                 class="p-4 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
 
                                                 <form action="{{ route('manuscript.show', $manuscript->id) }}"
@@ -345,6 +345,14 @@
                                                     <button type="submit"
                                                         class="font-normal text-blue-600 dark:text-blue-500 hover:underline">{{ $manuscript->file_name }}</button>
                                                 </form>
+                                            </td> --}}
+                                            <td>
+                                                <button type="button"
+                                                    wire:click="getManuscriptFilename({{ $manuscript->id }},'{{ $manuscript->file_name }}')"
+                                                    class="font-normal text-blue-600 dark:text-blue-500 hover:underline"
+                                                    data-modal-target="view-manuscript-modal"
+                                                    data-modal-toggle="view-manuscript-modal">{{ $manuscript->file_name }}</button>
+
                                             </td>
                                             <td
                                                 class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap dark:text-gray-400">
@@ -911,7 +919,7 @@
                     <form class="p-4 md:p-5">
                         <div class="mb-4">
                             <input wire:model="manuscript" type="file">
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">PDF, DOCX, DOC
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">PDF
                             </p>
 
                             <x-input-error :messages="$errors->get('manuscript')" class="mt-2" />
@@ -923,6 +931,86 @@
                         <!-- Loading Indicator -->
                         <div wire:loading>
                             Loading...please wait.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endcanany
+
+    @canany(['panelist.read', 'admin.read', 'student.read'])
+        <div id="view-manuscript-modal" tabindex="-1" aria-hidden="true" wire:ignore.self
+            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-7xl max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            View manuscript
+                        </h3>
+                        <button type="button" wire:click="clear"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            data-modal-toggle="view-manuscript-modal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <form class="p-4 md:p-5">
+                        <div class="grid gap-4 mb-6 grid-cols-3">
+                            <div class="col-span-2">
+                                <div class="relative overflow-hidden" style="padding-top: 56.25%;">
+                                    <!-- 16:9 aspect ratio -->
+                                    <iframe class="absolute top-0 left-0 w-full h-full"
+                                        src="{{ asset('storage/' . $manuscriptPath) }}">
+                                    </iframe>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="text-xl font-bold dark:text-white mb-4">Comments</h5>
+                                @canany(['panelist.create', 'admin.create'])
+                                    <div class="mb-4">
+                                        <textarea rows="4" wire:model="manuscriptComment"
+                                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="Leave a comment..."></textarea>
+                                        <x-input-error :messages="$errors->get('manuscriptComment')" class="mt-2" />
+                                    </div>
+                                    <x-save-update-button methodName="storeManuscriptComment"
+                                        wire:loading.attr="disabled">Save</x-save-update-button>
+                                    <div wire:loading wire:target='storeManuscriptComment'>
+                                        Loading...please wait.
+                                    </div>
+                                @endcanany
+
+                                <div class="mb-4 mt-4">
+                                    @forelse ($manuscriptComments as $comment)
+                                        <div class="flex items-center mb-4">
+                                            <img class="w-8 h-8 me-4 rounded-full"
+                                                src="https://ui-avatars.com/api/?name={{ $comment['user'] }}"
+                                                alt="">
+                                            <div class="font-medium dark:text-white">
+                                                <p>{{ $comment['user'] }} <time
+                                                        class="block text-sm text-gray-500 dark:text-gray-400">{{ $comment['created_at'] }}</time>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center mb-1 space-x-1 rtl:space-x-reverse">
+                                            <p class="mb-2 text-gray-500 dark:text-gray-400">
+                                                {!! nl2br(e($comment['comment'])) !!}
+                                            </p>
+                                        </div>
+                                    @empty
+                                        No comments
+                                    @endforelse
+
+                                </div>
+
+                            </div>
                         </div>
                     </form>
                 </div>
