@@ -12,6 +12,7 @@
         "laravel/socialite": "^5.14",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
+        "resend/resend-php": "^0.14.0",
         "spatie/laravel-permission": "^6.9"
     },
     "require-dev": {
