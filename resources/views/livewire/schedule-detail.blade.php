@@ -257,12 +257,12 @@
                                                                 </li>
                                                             @endcan
                                                             @can('panelist.read')
-                                                                <li>
+                                                                {{-- <li>
                                                                     <a href="#"
                                                                         wire:confirm="You are about to delete RSC. Continue?"
                                                                         wire:click="deleteRsc({{ $rsc->id }})"
                                                                         class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
-                                                                </li>
+                                                                </li> --}}
                                                             @endcan
                                                             @can('student.read')
                                                                 <li>
@@ -773,9 +773,9 @@
                                         wire:model="comments.{{ $commentKey }}.chapter"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                                     @if ($commentKey > 0)
-                                        <button type="button" class="text-sm text-red-600"
+                                        {{-- <button type="button" class="text-sm text-red-600"
                                             wire:confirm="Delete comment?"
-                                            wire:click="removeComment({{ $commentKey }})">remove</button>
+                                            wire:click="removeComment({{ $commentKey }})">remove</button> --}}
                                     @endif
 
                                     <x-input-error :messages="$errors->get('comments.' . $commentKey . '.chapter')" class="mt-2" />

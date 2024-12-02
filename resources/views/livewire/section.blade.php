@@ -133,9 +133,9 @@
                         </div>
                     </div>
                     <x-save-update-button methodName="update">Update</x-save-update-button>
-                    <x-delete-button wire:click="destroy('{{ $id }}')"
+                    {{-- <x-delete-button wire:click="destroy('{{ $id }}')"
                         wire:confirm="You are about to delete section {{ $name }}. Continue?">Delete
-                        section</x-delete-button>
+                        section</x-delete-button> --}}
                 </form>
             </div>
         </div>

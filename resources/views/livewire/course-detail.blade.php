@@ -37,8 +37,8 @@
 
         </div>
         <x-save-update-button methodName="updateCourse">Update</x-save-update-button>
-        <x-delete-button wire:click="destroyCourse('{{ $courseId }}')"
-            wire:confirm="You are about to delete course {{ $courseName }}. Continue?">Delete course</x-delete-button>
+        {{-- <x-delete-button wire:click="destroyCourse('{{ $courseId }}')"
+            wire:confirm="You are about to delete course {{ $courseName }}. Continue?">Delete course</x-delete-button> --}}
         <div wire:loading wire:target="updateCourse,destroyCourse">
             Loading...please wait.
         </div>
@@ -180,9 +180,9 @@
                         </div>
                     </div>
                     <x-save-update-button methodName="updateSection">Update</x-save-update-button>
-                    <x-delete-button wire:click="destroySection('{{ $sectionId }}')"
+                    {{-- <x-delete-button wire:click="destroySection('{{ $sectionId }}')"
                         wire:confirm="You are about to delete section {{ $sectionName }}. Continue?">Delete
-                        section</x-delete-button>
+                        section</x-delete-button> --}}
                     <div wire:loading wire:target="updateSection,destroySection">
                         Loading...please wait.
                     </div>

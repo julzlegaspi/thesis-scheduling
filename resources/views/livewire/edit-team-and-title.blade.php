@@ -117,8 +117,8 @@
 
         </div>
         <x-save-update-button methodName="update" class="mt-5">Update</x-save-update-button>
-        <x-delete-button methodName="destroy" class="mt-5" wire:click="destroy('{{ $id }}')"
-            wire:confirm="You are about to delete team {{ $name }}. Continue?">Delete</x-delete-button>
+        {{-- <x-delete-button methodName="destroy" class="mt-5" wire:click="destroy('{{ $id }}')"
+            wire:confirm="You are about to delete team {{ $name }}. Continue?">Delete</x-delete-button> --}}
         <div wire:loading wire:target="update">
             Loading...please wait.
         </div>

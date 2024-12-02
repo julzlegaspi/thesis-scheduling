@@ -471,9 +471,9 @@
 
                         </div>
                         <x-save-update-button methodName="update">Update</x-save-update-button>
-                        <x-delete-button wire:click="destroy('{{ $user?->id }}')"
+                        {{-- <x-delete-button wire:click="destroy('{{ $user?->id }}')"
                             wire:confirm="You are about to delete user {{ $name }}. Continue?">Delete
-                            user</x-delete-button>
+                            user</x-delete-button> --}}
                         <div wire:loading wire:target="update">
                             Loading...please wait.
                         </div>
