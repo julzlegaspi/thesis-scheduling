@@ -81,6 +81,6 @@ Route::middleware(['auth', 'verified', 'ensure_student_has_course_and_section'])
 
 Route::get('/complete-profile', CompleteProfile::class)->name('complete.profile.index');
 
-Route::get('/queue', OnQueue::class)->name('queue.index');
+Route::get('/on-queue', OnQueue::class)->name('queue.index');
 
 require __DIR__.'/auth.php';
