@@ -20,6 +20,7 @@ class Dashboard extends Component
     {
         $schedules = Schedule::orderBy('start', 'asc')
             ->where('status', Schedule::APPROVED)
+            ->where('custom_status', null)
             ->with('team', 'venue')
             ->get();
 
