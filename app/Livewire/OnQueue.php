@@ -16,9 +16,11 @@ class OnQueue extends Component
 
         $ongoingSchedule = Schedule::where('start', '<=', $currentDateTime)
             ->where('end', '>=', $currentDateTime)
+            ->where('status', Schedule::APPROVED)
             ->first();
 
         $upcomingSchedules = Schedule::where('end', '>=', $futureDateTime)
+            ->where('status', Schedule::APPROVED)
             ->orderBy('start', 'asc')
             ->take(3)
             ->get();
