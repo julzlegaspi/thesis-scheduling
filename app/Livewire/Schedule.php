@@ -152,11 +152,23 @@ class Schedule extends Component
 
     public function getTeamsByType()
     {
-        $teams = Team::whereHas('schedule', function($q) {
-            $q->whereHas('team', function($q) {
-                $q->where('type_of_defense', $this->type);
-            });
-        })->get();
+        if ($this->type == ScheduleModel::TD)
+        {
+            $teams = Team::whereHas('schedule', function($q) {
+                $q->whereHas('team', function($q) {
+                    $q->whereNotIn('type_of_defense', [ScheduleModel::POD, ScheduleModel::FOD]);
+                });
+            })
+            ->orWhereDoesntHave('schedule')
+            ->get();
+        } else {
+            $teams = Team::whereHas('schedule', function($q) {
+                $q->whereHas('team', function($q) {
+                    $q->where('type_of_defense', $this->type);
+                });
+            })
+            ->get();
+        }
 
         $this->teams = $teams;
     }

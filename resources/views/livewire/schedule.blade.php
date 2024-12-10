@@ -251,7 +251,7 @@
                             <label for="type"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
 
-                            <select id="type" wire:model.live="type"
+                            <select id="type" wire:model.live="type" wire:change="getTeamsByType"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <option value="">Select option</option>
                                 @foreach (\App\Models\Schedule::DEFENSE_STATUS as $key => $type)
